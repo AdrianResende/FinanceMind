@@ -8,6 +8,7 @@ import type { User } from '@/types/user'
 export const useAuthStore = defineStore('auth', () => {
   const accessToken = ref<string | null>(null)
   const user = ref<User | null>(null)
+  const isDemoMode = ref(false)
   const isAuthenticated = computed(() => accessToken.value !== null && user.value !== null)
 
   function applySession(token: string, sessionUser: User) {
@@ -18,6 +19,7 @@ export const useAuthStore = defineStore('auth', () => {
   function clear() {
     accessToken.value = null
     user.value = null
+    isDemoMode.value = false
   }
 
   async function login(email: string, password: string) {
@@ -31,6 +33,10 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function logout() {
+    if (isDemoMode.value) {
+      clear()
+      return
+    }
     try {
       await authService.logout()
     } finally {
@@ -53,6 +59,17 @@ export const useAuthStore = defineStore('auth', () => {
     accessToken.value = token
   }
 
+  function enterDemoMode() {
+    isDemoMode.value = true
+    applySession('demo-token', {
+      id: 'demo-user',
+      email: 'demo@financemind.app',
+      full_name: 'Usuário Demonstração',
+      plan: 'premium',
+      email_verified: true,
+    })
+  }
+
   async function loadCurrentUser() {
     user.value = await authService.me()
   }
@@ -65,6 +82,7 @@ export const useAuthStore = defineStore('auth', () => {
   return {
     accessToken,
     user,
+    isDemoMode,
     isAuthenticated,
     login,
     register,
@@ -72,5 +90,6 @@ export const useAuthStore = defineStore('auth', () => {
     tryRestoreSession,
     setAccessTokenFromOAuth,
     loadCurrentUser,
+    enterDemoMode,
   }
 })

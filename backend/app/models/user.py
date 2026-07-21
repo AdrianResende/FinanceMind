@@ -9,6 +9,7 @@ from app.db.base import Base
 
 if TYPE_CHECKING:
     from app.models.oauth_account import OAuthAccount
+    from app.models.portfolio import Portfolio
     from app.models.subscription import Subscription
 
 
@@ -28,4 +29,7 @@ class User(Base):
     )
     subscription: Mapped["Subscription"] = relationship(
         back_populates="user", uselist=False, cascade="all, delete-orphan"
+    )
+    portfolios: Mapped[list["Portfolio"]] = relationship(
+        back_populates="user", cascade="all, delete-orphan"
     )

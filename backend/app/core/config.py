@@ -31,6 +31,9 @@ class Settings(BaseSettings):
     resend_api_key: str = ""
     email_from: str = "FinanceMind <onboarding@resend.dev>"
 
+    brapi_token: str = ""
+    brapi_base_url: str = "https://brapi.dev/api"
+
     @property
     def google_redirect_uri(self) -> str:
         return f"{self.backend_url}/api/v1/auth/google/callback"

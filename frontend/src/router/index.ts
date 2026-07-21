@@ -50,6 +50,11 @@ const router = createRouter({
           name: 'app-home',
           component: () => import('../views/app/AppHomeView.vue'),
         },
+        {
+          path: 'carteira',
+          name: 'portfolio-home',
+          component: () => import('../views/app/PortfolioView.vue'),
+        },
       ],
     },
   ],

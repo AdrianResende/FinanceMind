@@ -7,6 +7,7 @@ from sqlalchemy.orm import selectinload
 from app.core.security import hash_password, verify_password
 from app.integrations.google_oauth import GoogleProfile
 from app.models.oauth_account import OAuthAccount
+from app.models.portfolio import Portfolio
 from app.models.subscription import Subscription
 from app.models.user import User
 
@@ -44,6 +45,7 @@ async def register_user(db: AsyncSession, email: str, password: str, full_name: 
         auth_provider="local",
     )
     user.subscription = Subscription(plan="free", status="active")
+    user.portfolios.append(Portfolio(name="Carteira Principal"))
     db.add(user)
     await db.commit()
     await db.refresh(user, attribute_names=["subscription"])
@@ -79,6 +81,7 @@ async def get_or_create_google_user(db: AsyncSession, profile: GoogleProfile) ->
             auth_provider="google",
         )
         user.subscription = Subscription(plan="free", status="active")
+        user.portfolios.append(Portfolio(name="Carteira Principal"))
         db.add(user)
 
     user.oauth_accounts.append(

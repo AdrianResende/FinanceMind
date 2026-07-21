@@ -10,7 +10,7 @@ const drawer = ref(true)
 
 const menuItems = [
   { title: 'Home', icon: 'mdi-view-dashboard-outline', to: { name: 'app-home' } },
-  { title: 'Carteira', icon: 'mdi-briefcase-outline', to: null },
+  { title: 'Carteira', icon: 'mdi-briefcase-outline', to: { name: 'portfolio-home' } },
   { title: 'Mercado', icon: 'mdi-chart-areaspline', to: null },
   { title: 'Aprendizado', icon: 'mdi-book-education-outline', to: null },
   { title: 'Simulações', icon: 'mdi-calculator-variant-outline', to: null },
@@ -43,6 +43,9 @@ async function onLogout() {
 
   <v-app-bar flat border>
     <v-app-bar-nav-icon @click="drawer = !drawer" />
+    <v-chip v-if="auth.isDemoMode" color="warning" variant="tonal" prepend-icon="mdi-flask-outline" class="ml-2">
+      Modo demonstração
+    </v-chip>
     <v-spacer />
     <span class="text-body-2 mr-4">{{ auth.user?.full_name }} · plano {{ auth.user?.plan }}</span>
     <v-btn variant="text" prepend-icon="mdi-logout" @click="onLogout">Sair</v-btn>

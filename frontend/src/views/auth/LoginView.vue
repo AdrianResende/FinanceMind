@@ -31,6 +31,13 @@ async function onSubmit() {
 function loginWithGoogle() {
   window.location.href = authService.googleLoginUrl()
 }
+
+const showDemoLogin = import.meta.env.DEV
+
+function enterDemoMode() {
+  auth.enterDemoMode()
+  router.push({ name: 'portfolio-home' })
+}
 </script>
 
 <template>
@@ -74,6 +81,24 @@ function loginWithGoogle() {
           <RouterLink to="/esqueci-senha" class="text-caption">Esqueci minha senha</RouterLink>
           <RouterLink to="/registro" class="text-caption">Criar conta</RouterLink>
         </div>
+
+        <template v-if="showDemoLogin">
+          <v-divider class="my-4">
+            <span class="text-caption text-medium-emphasis px-2">dev</span>
+          </v-divider>
+          <v-btn
+            block
+            variant="tonal"
+            color="warning"
+            prepend-icon="mdi-flask-outline"
+            @click="enterDemoMode"
+          >
+            Entrar em modo demonstração
+          </v-btn>
+          <p class="text-caption text-medium-emphasis text-center mt-2">
+            Sem backend/banco — navega com dados fictícios. Só aparece em build de desenvolvimento.
+          </p>
+        </template>
       </v-card>
     </v-responsive>
   </v-container>
