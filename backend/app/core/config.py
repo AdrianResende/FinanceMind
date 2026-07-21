@@ -20,12 +20,20 @@ class Settings(BaseSettings):
 
     cors_origins: list[str] = ["http://localhost:5173"]
 
+    frontend_url: str = "http://localhost:5173"
+    backend_url: str = "http://localhost:8000"
+
     groq_api_key: str = ""
     google_client_id: str = ""
     google_client_secret: str = ""
     stripe_secret_key: str = ""
     stripe_webhook_secret: str = ""
     resend_api_key: str = ""
+    email_from: str = "FinanceMind <onboarding@resend.dev>"
+
+    @property
+    def google_redirect_uri(self) -> str:
+        return f"{self.backend_url}/api/v1/auth/google/callback"
 
 
 @lru_cache
