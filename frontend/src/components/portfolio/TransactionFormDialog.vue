@@ -12,6 +12,7 @@ const open = defineModel<boolean>('open', { default: false })
 
 const props = defineProps<{
   editingTransaction?: Transaction | null
+  presetAsset?: Asset | null
 }>()
 
 const portfolioStore = usePortfolioStore()
@@ -50,8 +51,9 @@ const rules: FormRules = {
 }
 
 watch(
-  () => props.editingTransaction,
-  (transaction) => {
+  [() => props.editingTransaction, open],
+  ([transaction, isOpen]) => {
+    if (!isOpen) return
     if (transaction) {
       asset.value = transaction.asset
       operation.value = transaction.operation
@@ -60,7 +62,7 @@ watch(
       fees.value = Number(transaction.fees)
       operationDate.value = transaction.operation_date
     } else {
-      asset.value = null
+      asset.value = props.presetAsset ?? null
       operation.value = 'compra'
       quantity.value = null
       unitPrice.value = null

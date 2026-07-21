@@ -4,6 +4,8 @@ import { useDebounceFn } from '@vueuse/core'
 import type { SelectOption } from 'naive-ui'
 
 import { assetService } from '@/services/assetService'
+import { useAuthStore } from '@/stores/auth'
+import { demoAssets } from '@/stores/demoData'
 import type { Asset } from '@/types/asset'
 
 const modelValue = defineModel<Asset | null>({ default: null })
@@ -22,6 +24,12 @@ const options = computed<SelectOption[]>(() =>
 const search = useDebounceFn(async (query: string) => {
   if (!query) {
     items.value = []
+    return
+  }
+  const auth = useAuthStore()
+  if (auth.isDemoMode) {
+    const upper = query.toUpperCase()
+    items.value = demoAssets.filter((a) => a.ticker.includes(upper) || a.name.toUpperCase().includes(upper))
     return
   }
   loading.value = true

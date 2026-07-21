@@ -12,3 +12,8 @@ export interface PriceHistoryPoint {
   price_date: string
   close_price: string
 }
+
+export interface MarketBenchmarkPoint {
+  ref_date: string
+  value: string
+}

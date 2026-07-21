@@ -13,9 +13,9 @@ const collapsed = ref(false)
 const rawMenuItems = [
   { title: 'Home', icon: 'view-dashboard-outline', to: { name: 'app-home' } },
   { title: 'Carteira', icon: 'briefcase-outline', to: { name: 'portfolio-home' } },
-  { title: 'Mercado', icon: 'chart-areaspline', to: null },
-  { title: 'Aprendizado', icon: 'book-education-outline', to: null },
-  { title: 'Simulações', icon: 'calculator-variant-outline', to: null },
+  { title: 'Mercado', icon: 'chart-areaspline', to: { name: 'market-home' } },
+  { title: 'Aprendizado', icon: 'book-education-outline', to: { name: 'glossary-home' } },
+  { title: 'Simulações', icon: 'calculator-variant-outline', to: { name: 'simulations-home' } },
   { title: 'IA', icon: 'robot-outline', to: null },
   { title: 'Perfil', icon: 'account-outline', to: null },
   { title: 'Configurações', icon: 'cog-outline', to: null },

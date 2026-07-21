@@ -55,6 +55,26 @@ const router = createRouter({
           name: 'portfolio-home',
           component: () => import('../views/app/PortfolioView.vue'),
         },
+        {
+          path: 'mercado',
+          name: 'market-home',
+          component: () => import('../views/app/MarketView.vue'),
+        },
+        {
+          path: 'mercado/:ticker',
+          name: 'market-asset-detail',
+          component: () => import('../views/app/AssetDetailView.vue'),
+        },
+        {
+          path: 'aprendizado',
+          name: 'glossary-home',
+          component: () => import('../views/app/GlossaryView.vue'),
+        },
+        {
+          path: 'simulacoes',
+          name: 'simulations-home',
+          component: () => import('../views/app/SimulationsView.vue'),
+        },
       ],
     },
   ],

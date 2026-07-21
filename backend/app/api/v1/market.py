@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.api.v1.deps import get_current_user
 from app.db.session import get_db
 from app.models.user import User
-from app.schemas.market import AssetRead, PriceHistoryPoint
+from app.schemas.market import AssetRead, BenchmarkPoint, PriceHistoryPoint
 from app.services import market_service
 
 router = APIRouter(prefix="/market", tags=["market"])
@@ -45,3 +45,16 @@ async def get_asset_history(
 
     history = await market_service.get_price_history(db, asset.id)
     return [PriceHistoryPoint.from_model(row) for row in history]
+
+
+@router.get("/benchmarks/{code}", response_model=list[BenchmarkPoint])
+async def get_benchmark(
+    code: str,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    if code not in ("cdi", "ipca", "ibov"):
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Indexador não encontrado")
+
+    history = await market_service.get_benchmark_history(db, code)
+    return [BenchmarkPoint.from_model(row) for row in history]
