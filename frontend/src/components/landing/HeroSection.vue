@@ -5,24 +5,66 @@ const router = useRouter()
 </script>
 
 <template>
-  <v-container class="py-16 text-center">
-    <v-responsive class="mx-auto" max-width="720">
-      <h1 class="text-h3 text-md-h2 font-weight-bold mb-4">
+  <div class="hero-bg">
+    <div class="page-shell hero-inner">
+      <n-tag type="success" round :bordered="false" size="medium" class="hero-tag">
+        Beta gratuito
+      </n-tag>
+      <h1 class="text-display hero-title">
         Entenda seus investimentos. Acompanhe sua carteira. Cresça com confiança.
       </h1>
-      <p class="text-body-1 text-medium-emphasis mb-8">
+      <p class="text-lead hero-subtitle">
         FinanceMind ensina como funcionam Ações, FIIs, ETFs, Tesouro Direto e outros investimentos,
         e ajuda você a acompanhar sua carteira com clareza — sem jargão, sem achismo.
       </p>
-      <div class="d-flex justify-center ga-4 flex-wrap">
-        <v-btn size="large" color="primary" @click="router.push({ name: 'register' })">
+      <n-space justify="center" :size="16" class="hero-actions">
+        <n-button type="primary" size="large" round @click="router.push({ name: 'register' })">
           Criar conta grátis
-        </v-btn>
-        <v-btn size="large" variant="outlined" href="#recursos"> Ver recursos </v-btn>
-      </div>
-      <p class="text-caption text-medium-emphasis mt-4">
+        </n-button>
+        <n-button size="large" round tag="a" href="#recursos"> Ver recursos </n-button>
+      </n-space>
+      <p class="text-muted hero-disclaimer">
         Conteúdo educativo. Não é recomendação de investimento.
       </p>
-    </v-responsive>
-  </v-container>
+    </div>
+  </div>
 </template>
+
+<style scoped>
+.hero-bg {
+  padding-block: var(--space-24);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(14, 156, 143, 0.16), transparent 55%),
+    radial-gradient(circle at 85% 15%, rgba(15, 76, 100, 0.1), transparent 50%);
+}
+
+.hero-inner {
+  max-width: 760px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hero-tag {
+  margin-bottom: var(--space-4);
+}
+
+.hero-title {
+  margin-bottom: var(--space-4);
+}
+
+.hero-subtitle {
+  margin-bottom: var(--space-8);
+}
+
+.hero-actions {
+  margin-bottom: var(--space-4);
+}
+
+@media (max-width: 960px) {
+  .hero-bg {
+    padding-block: var(--space-16);
+  }
+}
+</style>

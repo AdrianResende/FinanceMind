@@ -27,11 +27,14 @@ const options = computed<ApexOptions>(() => ({
 </script>
 
 <template>
-  <v-card class="pa-4">
-    <v-card-title>Evolução do patrimônio</v-card-title>
+  <n-card
+    title="Evolução do patrimônio"
+    bordered
+    hoverable
+    content-style="padding: 24px"
+    class="glass-card"
+  >
     <ApexChart v-if="points.length" type="area" height="280" :options="options" :series="series" />
-    <p v-else class="text-body-2 text-medium-emphasis pa-4">
-      Ainda não há histórico de preços suficiente para este gráfico.
-    </p>
-  </v-card>
+    <p v-else class="text-body">Ainda não há histórico de preços suficiente para este gráfico.</p>
+  </n-card>
 </template>

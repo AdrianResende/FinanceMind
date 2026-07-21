@@ -26,7 +26,16 @@ onMounted(async () => {
 </script>
 
 <template>
-  <v-container class="fill-height d-flex align-center justify-center">
-    <v-progress-circular indeterminate color="primary" />
-  </v-container>
+  <div class="oauth-loading">
+    <n-spin size="large" />
+  </div>
 </template>
+
+<style scoped>
+.oauth-loading {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+</style>

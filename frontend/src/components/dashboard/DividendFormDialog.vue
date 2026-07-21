@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import axios from 'axios'
+import type { FormInst, FormRules } from 'naive-ui'
 
 import AssetAutocomplete from '@/components/market/AssetAutocomplete.vue'
 import { useDashboardStore } from '@/stores/dashboard'
@@ -10,24 +11,38 @@ const open = defineModel<boolean>('open', { default: false })
 
 const dashboardStore = useDashboardStore()
 
+const formRef = ref<FormInst | null>(null)
 const asset = ref<Asset | null>(null)
 const amount = ref<number | null>(null)
-const paymentDate = ref('')
+const paymentDate = ref<string | null>(null)
 const loading = ref(false)
 const errorMessage = ref('')
 
-const positiveRule = (v: number | null) => (v !== null && v > 0) || 'Deve ser maior que zero'
-const requiredRule = (v: unknown) => !!v || 'Campo obrigatório'
+const rules: FormRules = {
+  amount: {
+    required: true,
+    validator: (_rule, value: number | null) =>
+      value !== null && value > 0 ? true : new Error('Deve ser maior que zero'),
+    trigger: ['blur', 'input'],
+  },
+  paymentDate: { required: true, message: 'Informe a data do pagamento', trigger: 'blur' },
+}
 
 function resetForm() {
   asset.value = null
   amount.value = null
-  paymentDate.value = ''
+  paymentDate.value = null
   errorMessage.value = ''
 }
 
 async function onSubmit() {
-  if (!asset.value || amount.value === null || !paymentDate.value) {
+  try {
+    await formRef.value?.validate()
+  } catch {
+    return
+  }
+  if (!asset.value) {
+    errorMessage.value = 'Selecione um ativo.'
     return
   }
 
@@ -37,7 +52,7 @@ async function onSubmit() {
     await dashboardStore.createDividend({
       asset_id: asset.value.id,
       amount: String(amount.value),
-      payment_date: paymentDate.value,
+      payment_date: paymentDate.value!,
     })
     open.value = false
     resetForm()
@@ -56,38 +71,55 @@ async function onSubmit() {
 </script>
 
 <template>
-  <v-dialog v-model="open" max-width="420">
-    <v-card class="pa-4">
-      <v-card-title>Lançar provento</v-card-title>
-      <v-card-text>
-        <v-form @submit.prevent="onSubmit">
-          <AssetAutocomplete v-model="asset" class="mb-2" />
-          <v-text-field
-            v-model.number="amount"
-            label="Valor recebido"
-            type="number"
-            :rules="[requiredRule, positiveRule]"
-            class="mb-2"
+  <n-modal v-model:show="open">
+    <n-card
+      style="width: 420px"
+      title="Lançar provento"
+      :bordered="false"
+      size="huge"
+      role="dialog"
+      aria-modal="true"
+      content-style="padding-top: 20px"
+      class="glass-card glass-card--strong"
+    >
+      <n-form ref="formRef" :model="{ amount, paymentDate }" :rules="rules">
+        <n-form-item label="Ativo">
+          <AssetAutocomplete v-model="asset" style="width: 100%" />
+        </n-form-item>
+        <n-form-item path="amount" label="Valor recebido" show-require-mark>
+          <n-input-number
+            v-model:value="amount"
+            :min="0.01"
+            :precision="2"
+            style="width: 100%"
+            size="large"
           />
-          <v-text-field
-            v-model="paymentDate"
-            label="Data do pagamento"
+        </n-form-item>
+        <n-form-item path="paymentDate" label="Data do pagamento" show-require-mark>
+          <n-date-picker
+            v-model:formatted-value="paymentDate"
+            value-format="yyyy-MM-dd"
             type="date"
-            :rules="[requiredRule]"
-            class="mb-2"
+            style="width: 100%"
+            size="large"
           />
+        </n-form-item>
 
-          <v-alert v-if="errorMessage" type="error" density="compact" class="mb-4">
-            {{ errorMessage }}
-          </v-alert>
+        <n-alert v-if="errorMessage" type="error" class="mb-4">{{ errorMessage }}</n-alert>
 
-          <v-card-actions class="px-0">
-            <v-spacer />
-            <v-btn variant="text" @click="open = false">Cancelar</v-btn>
-            <v-btn type="submit" color="primary" :loading="loading">Salvar</v-btn>
-          </v-card-actions>
-        </v-form>
-      </v-card-text>
-    </v-card>
-  </v-dialog>
+        <div class="dialog-actions">
+          <n-button quaternary @click="open = false">Cancelar</n-button>
+          <n-button type="primary" :loading="loading" @click="onSubmit">Salvar</n-button>
+        </div>
+      </n-form>
+    </n-card>
+  </n-modal>
 </template>
+
+<style scoped>
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}
+</style>

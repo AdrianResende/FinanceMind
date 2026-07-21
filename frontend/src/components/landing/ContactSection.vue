@@ -3,13 +3,14 @@ const contactEmail = 'contato@financemind.app'
 </script>
 
 <template>
-  <v-container id="contato" class="py-12 text-center">
-    <h2 class="text-h4 font-weight-bold mb-4">Contato</h2>
-    <p class="text-body-1 text-medium-emphasis mb-4">
-      Dúvidas, sugestões ou parcerias? Fale com a gente.
-    </p>
-    <v-btn size="large" color="primary" prepend-icon="mdi-email-outline" :href="`mailto:${contactEmail}`">
+  <section id="contato" class="page-shell section-py text-center">
+    <h2 class="text-section-title mb-4">Contato</h2>
+    <p class="text-lead mb-6">Dúvidas, sugestões ou parcerias? Fale com a gente.</p>
+    <n-button size="large" type="primary" round tag="a" :href="`mailto:${contactEmail}`">
+      <template #icon>
+        <MdiIcon name="email-outline" :size="18" />
+      </template>
       {{ contactEmail }}
-    </v-btn>
-  </v-container>
+    </n-button>
+  </section>
 </template>

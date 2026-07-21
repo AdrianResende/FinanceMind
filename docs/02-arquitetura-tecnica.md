@@ -4,7 +4,7 @@
 
 | Camada | Tecnologia |
 |---|---|
-| Frontend | Vue 3 (Composition API) + TypeScript + Pinia + Vue Router + Vuetify 3 + ApexCharts + Axios + vue-i18n |
+| Frontend | Vue 3 (Composition API) + TypeScript + Pinia + Vue Router + Naive UI + ApexCharts + Axios + vue-i18n |
 | Backend | Python 3.12 + FastAPI + Pydantic v2 |
 | ORM / Migrations | SQLAlchemy 2.0 (async) + Alembic |
 | Banco de dados | PostgreSQL (Docker local em dev, Supabase em produção) |
@@ -23,7 +23,7 @@
 ```mermaid
 flowchart TB
     subgraph Client["Navegador do Usuário"]
-        SPA["Vue 3 SPA (Vuetify + Pinia)"]
+        SPA["Vue 3 SPA (Naive UI + Pinia)"]
     end
 
     subgraph Backend["FinanceMind API (FastAPI)"]

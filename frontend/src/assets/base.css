@@ -1,70 +1,49 @@
-/* color palette from <https://github.com/vuejs/theme> */
 :root {
-  --vt-c-white: #ffffff;
-  --vt-c-white-soft: #f8f8f8;
-  --vt-c-white-mute: #f2f2f2;
+  --brand-primary: #0f4c64;
+  --brand-primary-dark: #0a3a4d;
+  --brand-secondary: #0e9c8f;
+  --brand-secondary-dark: #0b7a70;
+  --brand-success: #1b8a5a;
+  --brand-error: #d64545;
+  --brand-warning: #c77d18;
+  --brand-info: #2a7de1;
 
-  --vt-c-black: #181818;
-  --vt-c-black-soft: #222222;
-  --vt-c-black-mute: #282828;
+  --ink-1: #12232b;
+  --ink-2: #43575f;
+  --ink-3: #6f838a;
 
-  --vt-c-indigo: #2c3e50;
+  --glass-bg: rgba(255, 255, 255, 0.62);
+  --glass-bg-strong: rgba(255, 255, 255, 0.78);
+  --glass-border: rgba(255, 255, 255, 0.65);
+  --glass-shadow: 0 8px 32px -8px rgba(15, 76, 100, 0.18);
+  --glass-shadow-hover: 0 24px 48px -16px rgba(15, 76, 100, 0.28);
 
-  --vt-c-divider-light-1: rgba(60, 60, 60, 0.29);
-  --vt-c-divider-light-2: rgba(60, 60, 60, 0.12);
-  --vt-c-divider-dark-1: rgba(84, 84, 84, 0.65);
-  --vt-c-divider-dark-2: rgba(84, 84, 84, 0.48);
-
-  --vt-c-text-light-1: var(--vt-c-indigo);
-  --vt-c-text-light-2: rgba(60, 60, 60, 0.66);
-  --vt-c-text-dark-1: var(--vt-c-white);
-  --vt-c-text-dark-2: rgba(235, 235, 235, 0.64);
-}
-
-/* semantic color variables for this project */
-:root {
-  --color-background: var(--vt-c-white);
-  --color-background-soft: var(--vt-c-white-soft);
-  --color-background-mute: var(--vt-c-white-mute);
-
-  --color-border: var(--vt-c-divider-light-2);
-  --color-border-hover: var(--vt-c-divider-light-1);
-
-  --color-heading: var(--vt-c-text-light-1);
-  --color-text: var(--vt-c-text-light-1);
-
-  --section-gap: 160px;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-background: var(--vt-c-black);
-    --color-background-soft: var(--vt-c-black-soft);
-    --color-background-mute: var(--vt-c-black-mute);
-
-    --color-border: var(--vt-c-divider-dark-2);
-    --color-border-hover: var(--vt-c-divider-dark-1);
-
-    --color-heading: var(--vt-c-text-dark-1);
-    --color-text: var(--vt-c-text-dark-2);
-  }
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-24: 96px;
 }
 
 *,
 *::before,
 *::after {
   box-sizing: border-box;
-  margin: 0;
-  font-weight: normal;
+}
+
+html,
+body,
+#app {
+  min-height: 100%;
 }
 
 body {
-  min-height: 100vh;
-  color: var(--color-text);
-  background: var(--color-background);
-  transition:
-    color 0.5s,
-    background-color 0.5s;
+  margin: 0;
+  color: var(--ink-1);
   line-height: 1.6;
   font-family:
     Inter,
@@ -83,4 +62,178 @@ body {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background:
+    radial-gradient(circle at 8% -10%, rgba(14, 156, 143, 0.18), transparent 42%),
+    radial-gradient(circle at 92% 0%, rgba(15, 76, 100, 0.16), transparent 40%),
+    radial-gradient(circle at 50% 100%, rgba(199, 125, 24, 0.08), transparent 45%),
+    #eef3f4;
+  background-attachment: fixed;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  margin: 0;
+}
+
+/* Typography scale */
+.text-display {
+  font-size: 3rem;
+  line-height: 1.12;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--ink-1);
+}
+
+.text-section-title {
+  font-size: 2rem;
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--ink-1);
+}
+
+.text-title {
+  font-size: 1.375rem;
+  line-height: 1.3;
+  font-weight: 700;
+  color: var(--ink-1);
+}
+
+.text-lead {
+  font-size: 1.125rem;
+  line-height: 1.6;
+  color: var(--ink-2);
+}
+
+.text-body {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--ink-2);
+}
+
+.text-muted {
+  color: var(--ink-3);
+}
+
+@media (max-width: 960px) {
+  .text-display {
+    font-size: 2.25rem;
+  }
+
+  .text-section-title {
+    font-size: 1.625rem;
+  }
+}
+
+/* Layout helpers */
+.page-shell {
+  max-width: 1180px;
+  margin-inline: auto;
+  padding-inline: var(--space-6);
+}
+
+.section-py {
+  padding-block: var(--space-24);
+}
+
+@media (max-width: 960px) {
+  .section-py {
+    padding-block: var(--space-16);
+  }
+}
+
+/* Glass card aesthetic, layered on top of Naive UI's n-card */
+.glass-card {
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(20px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
+  border-color: var(--glass-border) !important;
+  box-shadow: var(--glass-shadow) !important;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    background 0.25s ease !important;
+}
+
+.glass-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--glass-shadow-hover) !important;
+}
+
+.glass-card--strong {
+  background: var(--glass-bg-strong) !important;
+}
+
+.glass-card--tint {
+  background: linear-gradient(
+    150deg,
+    rgba(15, 76, 100, 0.92),
+    rgba(11, 122, 112, 0.9)
+  ) !important;
+  border-color: rgba(255, 255, 255, 0.18) !important;
+  color: #fff !important;
+}
+
+.glass-card--tint .text-muted,
+.glass-card--tint .n-card-header__main {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+.icon-tile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: rgba(15, 76, 100, 0.1);
+  color: var(--brand-primary);
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.icon-tile--sm {
+  width: 40px;
+  height: 40px;
+  font-size: 18px;
+  border-radius: 11px;
+}
+
+/* Generic utilities */
+.h-100 {
+  height: 100%;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.mb-1 {
+  margin-bottom: var(--space-1);
+}
+.mb-2 {
+  margin-bottom: var(--space-2);
+}
+.mb-3 {
+  margin-bottom: var(--space-3);
+}
+.mb-4 {
+  margin-bottom: var(--space-4);
+}
+.mb-6 {
+  margin-bottom: var(--space-6);
+}
+.mb-8 {
+  margin-bottom: var(--space-8);
+}
+.mt-4 {
+  margin-top: var(--space-4);
+}
+.mt-6 {
+  margin-top: var(--space-6);
 }

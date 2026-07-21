@@ -1,23 +1,38 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { h, ref } from 'vue'
+import { RouterLink, RouterView, useRouter } from 'vue-router'
+import type { MenuOption } from 'naive-ui'
 
+import MdiIcon from '@/components/common/MdiIcon.vue'
 import { useAuthStore } from '@/stores/auth'
 
 const auth = useAuthStore()
 const router = useRouter()
-const drawer = ref(true)
+const collapsed = ref(false)
 
-const menuItems = [
-  { title: 'Home', icon: 'mdi-view-dashboard-outline', to: { name: 'app-home' } },
-  { title: 'Carteira', icon: 'mdi-briefcase-outline', to: { name: 'portfolio-home' } },
-  { title: 'Mercado', icon: 'mdi-chart-areaspline', to: null },
-  { title: 'Aprendizado', icon: 'mdi-book-education-outline', to: null },
-  { title: 'Simulações', icon: 'mdi-calculator-variant-outline', to: null },
-  { title: 'IA', icon: 'mdi-robot-outline', to: null },
-  { title: 'Perfil', icon: 'mdi-account-outline', to: null },
-  { title: 'Configurações', icon: 'mdi-cog-outline', to: null },
-]
+const rawMenuItems = [
+  { title: 'Home', icon: 'view-dashboard-outline', to: { name: 'app-home' } },
+  { title: 'Carteira', icon: 'briefcase-outline', to: { name: 'portfolio-home' } },
+  { title: 'Mercado', icon: 'chart-areaspline', to: null },
+  { title: 'Aprendizado', icon: 'book-education-outline', to: null },
+  { title: 'Simulações', icon: 'calculator-variant-outline', to: null },
+  { title: 'IA', icon: 'robot-outline', to: null },
+  { title: 'Perfil', icon: 'account-outline', to: null },
+  { title: 'Configurações', icon: 'cog-outline', to: null },
+] as const
+
+function renderIcon(icon: string) {
+  return () => h(MdiIcon, { name: icon, size: 18 })
+}
+
+const menuOptions: MenuOption[] = rawMenuItems.map((item) => ({
+  key: item.title,
+  icon: renderIcon(item.icon),
+  disabled: !item.to,
+  label: item.to
+    ? () => h(RouterLink, { to: item.to! }, { default: () => item.title })
+    : item.title,
+}))
 
 async function onLogout() {
   await auth.logout()
@@ -26,32 +41,81 @@ async function onLogout() {
 </script>
 
 <template>
-  <v-navigation-drawer v-model="drawer">
-    <v-list-item title="FinanceMind" class="font-weight-bold py-4" />
-    <v-divider />
-    <v-list nav>
-      <v-list-item
-        v-for="item in menuItems"
-        :key="item.title"
-        :prepend-icon="item.icon"
-        :title="item.title"
-        :to="item.to ?? undefined"
-        :disabled="!item.to"
-      />
-    </v-list>
-  </v-navigation-drawer>
+  <n-layout has-sider style="min-height: 100vh; background: transparent">
+    <n-layout-sider
+      bordered
+      collapse-mode="width"
+      :collapsed-width="64"
+      :width="232"
+      :collapsed="collapsed"
+      show-trigger
+      class="app-sider"
+      @collapse="collapsed = true"
+      @expand="collapsed = false"
+    >
+      <div class="app-sider__brand">
+        <span v-if="!collapsed" class="text-title">FinanceMind</span>
+        <span v-else class="text-title">FM</span>
+      </div>
+      <n-menu :options="menuOptions" :collapsed="collapsed" :collapsed-width="64" />
+    </n-layout-sider>
 
-  <v-app-bar flat border>
-    <v-app-bar-nav-icon @click="drawer = !drawer" />
-    <v-chip v-if="auth.isDemoMode" color="warning" variant="tonal" prepend-icon="mdi-flask-outline" class="ml-2">
-      Modo demonstração
-    </v-chip>
-    <v-spacer />
-    <span class="text-body-2 mr-4">{{ auth.user?.full_name }} · plano {{ auth.user?.plan }}</span>
-    <v-btn variant="text" prepend-icon="mdi-logout" @click="onLogout">Sair</v-btn>
-  </v-app-bar>
+    <n-layout>
+      <n-layout-header bordered class="app-topbar">
+        <n-tag v-if="auth.isDemoMode" type="warning" round :bordered="false">
+          <template #icon><MdiIcon name="flask-outline" :size="14" /></template>
+          Modo demonstração
+        </n-tag>
+        <div class="app-topbar__spacer" />
+        <span class="text-body app-topbar__user">
+          {{ auth.user?.full_name }} · plano {{ auth.user?.plan }}
+        </span>
+        <n-button quaternary @click="onLogout">
+          <template #icon><MdiIcon name="logout" :size="16" /></template>
+          Sair
+        </n-button>
+      </n-layout-header>
 
-  <v-main>
-    <RouterView />
-  </v-main>
+      <n-layout-content class="app-content">
+        <RouterView />
+      </n-layout-content>
+    </n-layout>
+  </n-layout>
 </template>
+
+<style scoped>
+.app-sider {
+  background: rgba(255, 255, 255, 0.7) !important;
+  backdrop-filter: blur(16px) saturate(160%);
+}
+
+.app-sider__brand {
+  height: 64px;
+  display: flex;
+  align-items: center;
+  padding-inline: var(--space-6);
+  color: var(--brand-primary);
+}
+
+.app-topbar {
+  height: 64px;
+  display: flex;
+  align-items: center;
+  padding-inline: var(--space-6);
+  background: rgba(255, 255, 255, 0.7) !important;
+  backdrop-filter: blur(16px) saturate(160%);
+}
+
+.app-topbar__spacer {
+  flex: 1;
+}
+
+.app-topbar__user {
+  margin-inline-end: var(--space-4);
+}
+
+.app-content {
+  padding: var(--space-6);
+  min-height: calc(100vh - 64px);
+}
+</style>

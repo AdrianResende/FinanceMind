@@ -1,33 +1,17 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { h, onMounted, ref } from 'vue'
+import { NButton, NSpace, NTag, type DataTableColumns } from 'naive-ui'
 
+import MdiIcon from '@/components/common/MdiIcon.vue'
 import TransactionFormDialog from '@/components/portfolio/TransactionFormDialog.vue'
 import { usePortfolioStore } from '@/stores/portfolio'
+import type { PositionItem } from '@/types/portfolio'
 import type { Transaction } from '@/types/transaction'
 
 const portfolioStore = usePortfolioStore()
 
 const dialogOpen = ref(false)
 const editingTransaction = ref<Transaction | null>(null)
-
-const positionHeaders = [
-  { title: 'Ativo', key: 'ticker' },
-  { title: 'Quantidade', key: 'quantity' },
-  { title: 'Preço médio', key: 'avg_price' },
-  { title: 'Valor investido', key: 'invested_value' },
-  { title: 'Preço atual', key: 'current_price' },
-  { title: 'Valor atual', key: 'current_value' },
-  { title: 'Lucro', key: 'profit' },
-]
-
-const transactionHeaders = [
-  { title: 'Data', key: 'operation_date' },
-  { title: 'Ativo', key: 'ticker' },
-  { title: 'Operação', key: 'operation' },
-  { title: 'Quantidade', key: 'quantity' },
-  { title: 'Preço', key: 'unit_price' },
-  { title: 'Ações', key: 'actions', sortable: false },
-]
 
 function formatCurrency(value: string) {
   return Number(value).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
@@ -45,9 +29,11 @@ function profitTone(value: string): 'success' | 'error' | undefined {
   return undefined
 }
 
-function profitClass(value: string) {
+function profitColor(value: string) {
   const tone = profitTone(value)
-  return tone ? `text-${tone}` : ''
+  if (tone === 'success') return 'var(--brand-success)'
+  if (tone === 'error') return 'var(--brand-error)'
+  return undefined
 }
 
 function openCreateDialog() {
@@ -64,115 +50,168 @@ async function onDelete(transaction: Transaction) {
   await portfolioStore.deleteTransaction(transaction.id)
 }
 
+const positionColumns: DataTableColumns<PositionItem> = [
+  {
+    title: 'Ativo',
+    key: 'ticker',
+    render: (row) => h('span', { style: 'font-weight: 500' }, row.asset.ticker),
+  },
+  { title: 'Quantidade', key: 'quantity' },
+  { title: 'Preço médio', key: 'avg_price', render: (row) => formatCurrency(row.avg_price) },
+  { title: 'Valor investido', key: 'invested_value', render: (row) => formatCurrency(row.invested_value) },
+  { title: 'Preço atual', key: 'current_price', render: (row) => formatCurrency(row.current_price) },
+  { title: 'Valor atual', key: 'current_value', render: (row) => formatCurrency(row.current_value) },
+  {
+    title: 'Lucro',
+    key: 'profit',
+    render: (row) =>
+      h(
+        'span',
+        { style: { color: profitColor(row.profit) } },
+        `${formatCurrency(row.profit)} (${formatPercent(row.profit_pct)})`,
+      ),
+  },
+]
+
+const transactionColumns: DataTableColumns<Transaction> = [
+  { title: 'Data', key: 'operation_date' },
+  {
+    title: 'Ativo',
+    key: 'ticker',
+    render: (row) => h('span', { style: 'font-weight: 500' }, row.asset.ticker),
+  },
+  {
+    title: 'Operação',
+    key: 'operation',
+    render: (row) =>
+      h(
+        NTag,
+        { type: row.operation === 'compra' ? 'success' : 'error', size: 'small', round: true, bordered: false },
+        { default: () => (row.operation === 'compra' ? 'Compra' : 'Venda') },
+      ),
+  },
+  { title: 'Quantidade', key: 'quantity' },
+  { title: 'Preço', key: 'unit_price', render: (row) => formatCurrency(row.unit_price) },
+  {
+    title: 'Ações',
+    key: 'actions',
+    render: (row) =>
+      h(NSpace, { size: 4 }, () => [
+        h(
+          NButton,
+          { quaternary: true, circle: true, size: 'small', onClick: () => openEditDialog(row) },
+          { icon: () => h(MdiIcon, { name: 'pencil-outline', size: 16 }) },
+        ),
+        h(
+          NButton,
+          { quaternary: true, circle: true, size: 'small', onClick: () => onDelete(row) },
+          { icon: () => h(MdiIcon, { name: 'delete-outline', size: 16 }) },
+        ),
+      ]),
+  },
+]
+
 onMounted(() => {
   portfolioStore.loadAll()
 })
 </script>
 
 <template>
-  <v-container>
-    <div class="d-flex align-center justify-space-between mb-4">
-      <h1 class="text-h5 font-weight-bold">Carteira</h1>
-      <v-btn color="primary" prepend-icon="mdi-plus" @click="openCreateDialog">Nova transação</v-btn>
+  <div>
+    <div class="portfolio-header mb-6">
+      <h1 class="text-section-title">Carteira</h1>
+      <n-button type="primary" round @click="openCreateDialog">
+        <template #icon><MdiIcon name="plus" :size="16" /></template>
+        Nova transação
+      </n-button>
     </div>
 
-    <v-alert v-if="portfolioStore.error" type="error" density="compact" class="mb-4">
+    <n-alert v-if="portfolioStore.error" type="error" class="mb-4">
       {{ portfolioStore.error }}
-    </v-alert>
+    </n-alert>
 
-    <v-row v-if="portfolioStore.summary" class="mb-2">
-      <v-col cols="12" sm="4">
-        <v-card class="pa-4 d-flex align-center ga-3">
-          <v-avatar color="primary" variant="tonal" icon="mdi-wallet-outline" />
+    <n-grid v-if="portfolioStore.summary" :x-gap="24" :y-gap="24" cols="1 m:3" responsive="screen" class="mb-6">
+      <n-grid-item>
+        <n-card bordered hoverable content-style="padding: 24px" class="glass-card stat-card">
+          <div class="icon-tile"><MdiIcon name="wallet-outline" :size="22" /></div>
           <div>
-            <div class="text-caption text-medium-emphasis">Valor investido</div>
-            <div class="text-h6">{{ formatCurrency(portfolioStore.summary.total_invested) }}</div>
+            <div class="text-muted" style="font-size: 0.8125rem">Valor investido</div>
+            <div class="text-title">{{ formatCurrency(portfolioStore.summary.total_invested) }}</div>
           </div>
-        </v-card>
-      </v-col>
-      <v-col cols="12" sm="4">
-        <v-card class="pa-4 d-flex align-center ga-3">
-          <v-avatar color="primary" variant="tonal" icon="mdi-finance" />
+        </n-card>
+      </n-grid-item>
+      <n-grid-item>
+        <n-card bordered hoverable content-style="padding: 24px" class="glass-card stat-card">
+          <div class="icon-tile"><MdiIcon name="finance" :size="22" /></div>
           <div>
-            <div class="text-caption text-medium-emphasis">Valor atual</div>
-            <div class="text-h6">{{ formatCurrency(portfolioStore.summary.total_current) }}</div>
+            <div class="text-muted" style="font-size: 0.8125rem">Valor atual</div>
+            <div class="text-title">{{ formatCurrency(portfolioStore.summary.total_current) }}</div>
           </div>
-        </v-card>
-      </v-col>
-      <v-col cols="12" sm="4">
-        <v-card class="pa-4 d-flex align-center ga-3">
-          <v-avatar
-            :color="profitTone(portfolioStore.summary.total_profit) ?? 'primary'"
-            variant="tonal"
-            :icon="Number(portfolioStore.summary.total_profit) >= 0 ? 'mdi-trending-up' : 'mdi-trending-down'"
-          />
+        </n-card>
+      </n-grid-item>
+      <n-grid-item>
+        <n-card bordered hoverable content-style="padding: 24px" class="glass-card stat-card">
+          <div class="icon-tile">
+            <MdiIcon
+              :name="Number(portfolioStore.summary.total_profit) >= 0 ? 'trending-up' : 'trending-down'"
+              :size="22"
+            />
+          </div>
           <div>
-            <div class="text-caption text-medium-emphasis">Lucro</div>
-            <div class="text-h6" :class="profitClass(portfolioStore.summary.total_profit)">
+            <div class="text-muted" style="font-size: 0.8125rem">Lucro</div>
+            <div
+              class="text-title"
+              :style="{ color: profitColor(portfolioStore.summary.total_profit) }"
+            >
               {{ formatCurrency(portfolioStore.summary.total_profit) }}
-              <span class="text-body-2">({{ formatPercent(portfolioStore.summary.total_profit_pct) }})</span>
+              <span class="text-body">({{ formatPercent(portfolioStore.summary.total_profit_pct) }})</span>
             </div>
           </div>
-        </v-card>
-      </v-col>
-    </v-row>
+        </n-card>
+      </n-grid-item>
+    </n-grid>
 
-    <v-card class="mb-6">
-      <v-card-title>Posição consolidada</v-card-title>
-      <v-data-table
-        :headers="positionHeaders"
-        :items="portfolioStore.summary?.positions ?? []"
+    <n-card
+      title="Posição consolidada"
+      bordered
+      content-style="padding: 24px"
+      class="glass-card mb-6"
+    >
+      <n-data-table
+        :columns="positionColumns"
+        :data="portfolioStore.summary?.positions ?? []"
         :loading="portfolioStore.loading"
-        no-data-text="Nenhuma posição ainda. Lance sua primeira transação."
+        :bordered="false"
       >
-        <template #item="{ item }">
-          <tr>
-            <td class="font-weight-medium">{{ item.asset.ticker }}</td>
-            <td>{{ item.quantity }}</td>
-            <td>{{ formatCurrency(item.avg_price) }}</td>
-            <td>{{ formatCurrency(item.invested_value) }}</td>
-            <td>{{ formatCurrency(item.current_price) }}</td>
-            <td>{{ formatCurrency(item.current_value) }}</td>
-            <td :class="profitClass(item.profit)">
-              {{ formatCurrency(item.profit) }} ({{ formatPercent(item.profit_pct) }})
-            </td>
-          </tr>
-        </template>
-      </v-data-table>
-    </v-card>
+        <template #empty>Nenhuma posição ainda. Lance sua primeira transação.</template>
+      </n-data-table>
+    </n-card>
 
-    <v-card>
-      <v-card-title>Transações</v-card-title>
-      <v-data-table
-        :headers="transactionHeaders"
-        :items="portfolioStore.transactions"
+    <n-card title="Transações" bordered content-style="padding: 24px" class="glass-card">
+      <n-data-table
+        :columns="transactionColumns"
+        :data="portfolioStore.transactions"
         :loading="portfolioStore.loading"
-        no-data-text="Nenhuma transação lançada ainda."
+        :bordered="false"
       >
-        <template #item="{ item }">
-          <tr>
-            <td>{{ item.operation_date }}</td>
-            <td class="font-weight-medium">{{ item.asset.ticker }}</td>
-            <td>
-              <v-chip
-                size="small"
-                :color="item.operation === 'compra' ? 'success' : 'error'"
-                variant="tonal"
-              >
-                {{ item.operation === 'compra' ? 'Compra' : 'Venda' }}
-              </v-chip>
-            </td>
-            <td>{{ item.quantity }}</td>
-            <td>{{ formatCurrency(item.unit_price) }}</td>
-            <td>
-              <v-btn icon="mdi-pencil" variant="text" size="small" @click="openEditDialog(item)" />
-              <v-btn icon="mdi-delete" variant="text" size="small" @click="onDelete(item)" />
-            </td>
-          </tr>
-        </template>
-      </v-data-table>
-    </v-card>
+        <template #empty>Nenhuma transação lançada ainda.</template>
+      </n-data-table>
+    </n-card>
 
     <TransactionFormDialog v-model:open="dialogOpen" :editing-transaction="editingTransaction" />
-  </v-container>
+  </div>
 </template>
+
+<style scoped>
+.portfolio-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.stat-card :deep(.n-card__content) {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+</style>
