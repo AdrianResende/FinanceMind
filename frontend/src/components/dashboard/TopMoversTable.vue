@@ -18,20 +18,26 @@ function formatChange(value: string) {
       <v-col cols="12" sm="6">
         <div class="text-caption text-medium-emphasis mb-1">Altas</div>
         <v-list density="compact">
-          <v-list-item v-for="item in data.gainers" :key="item.asset.id" :title="item.asset.ticker">
-            <template #append>
-              <span class="text-success font-weight-medium">{{ formatChange(item.change_pct) }}</span>
-            </template>
+          <v-list-item v-for="item in data.gainers" :key="item.asset.id" class="px-0">
+            <div class="d-flex align-center justify-space-between ga-2">
+              <span class="text-truncate">{{ item.asset.ticker }}</span>
+              <span class="text-success font-weight-medium flex-shrink-0">{{
+                formatChange(item.change_pct)
+              }}</span>
+            </div>
           </v-list-item>
         </v-list>
       </v-col>
       <v-col cols="12" sm="6">
         <div class="text-caption text-medium-emphasis mb-1">Baixas</div>
         <v-list density="compact">
-          <v-list-item v-for="item in data.losers" :key="item.asset.id" :title="item.asset.ticker">
-            <template #append>
-              <span class="text-error font-weight-medium">{{ formatChange(item.change_pct) }}</span>
-            </template>
+          <v-list-item v-for="item in data.losers" :key="item.asset.id" class="px-0">
+            <div class="d-flex align-center justify-space-between ga-2">
+              <span class="text-truncate">{{ item.asset.ticker }}</span>
+              <span class="text-error font-weight-medium flex-shrink-0">{{
+                formatChange(item.change_pct)
+              }}</span>
+            </div>
           </v-list-item>
         </v-list>
       </v-col>

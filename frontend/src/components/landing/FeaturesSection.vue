@@ -14,8 +14,10 @@ const features = [
     <h2 class="text-h4 font-weight-bold text-center mb-10">Recursos</h2>
     <v-row>
       <v-col v-for="feature in features" :key="feature.title" cols="12" sm="6" md="4">
-        <v-card class="pa-6 h-100" variant="flat" color="surface-variant" rounded="lg">
-          <v-icon :icon="feature.icon" size="32" color="primary" class="mb-3" />
+        <v-card class="pa-6 h-100 feature-card" variant="flat" color="surface" rounded="lg" border>
+          <v-avatar color="primary" variant="tonal" size="48" class="mb-4">
+            <v-icon :icon="feature.icon" size="24" />
+          </v-avatar>
           <h3 class="text-subtitle-1 font-weight-bold mb-1">{{ feature.title }}</h3>
           <p class="text-body-2 text-medium-emphasis">{{ feature.text }}</p>
         </v-card>
@@ -23,3 +25,16 @@ const features = [
     </v-row>
   </v-container>
 </template>
+
+<style scoped>
+.feature-card {
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px -12px rgba(15, 76, 100, 0.25);
+}
+</style>

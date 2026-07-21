@@ -20,9 +20,14 @@ async function onSubmit() {
 </script>
 
 <template>
-  <v-container class="fill-height" fluid>
+  <v-container class="fill-height auth-bg d-flex align-center justify-center" fluid>
     <v-responsive class="mx-auto" max-width="420">
-      <v-card class="pa-8" variant="outlined">
+      <div class="text-center mb-6">
+        <RouterLink to="/" class="text-decoration-none text-h5 font-weight-bold text-primary">
+          FinanceMind
+        </RouterLink>
+      </div>
+      <v-card class="pa-8" variant="outlined" rounded="lg" elevation="2">
         <h1 class="text-h5 font-weight-bold mb-6 text-center">Recuperar senha</h1>
 
         <v-alert v-if="sent" type="success" density="compact" class="mb-4">
@@ -43,3 +48,11 @@ async function onSubmit() {
     </v-responsive>
   </v-container>
 </template>
+
+<style scoped>
+.auth-bg {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(15, 76, 100, 0.08), transparent 60%),
+    #f7f9fa;
+}
+</style>

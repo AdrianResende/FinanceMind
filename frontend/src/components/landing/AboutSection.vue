@@ -27,8 +27,10 @@ const pillars = [
     </p>
     <v-row>
       <v-col v-for="pillar in pillars" :key="pillar.title" cols="12" md="4">
-        <v-card class="pa-6 h-100" variant="outlined">
-          <v-icon :icon="pillar.icon" size="40" color="primary" class="mb-3" />
+        <v-card class="pa-6 h-100 pillar-card" variant="outlined" rounded="lg">
+          <v-avatar color="primary" variant="tonal" size="56" class="mb-4">
+            <v-icon :icon="pillar.icon" size="28" />
+          </v-avatar>
           <h3 class="text-h6 font-weight-bold mb-2">{{ pillar.title }}</h3>
           <p class="text-body-2 text-medium-emphasis">{{ pillar.text }}</p>
         </v-card>
@@ -36,3 +38,16 @@ const pillars = [
     </v-row>
   </v-container>
 </template>
+
+<style scoped>
+.pillar-card {
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.pillar-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px -12px rgba(15, 76, 100, 0.25);
+}
+</style>

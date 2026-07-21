@@ -38,32 +38,50 @@ const plans = [
     <h2 class="text-h4 font-weight-bold text-center mb-10">Planos</h2>
     <v-row justify="center">
       <v-col v-for="plan in plans" :key="plan.name" cols="12" sm="8" md="4">
-        <v-card
-          class="pa-6 h-100"
-          :variant="plan.highlight ? 'elevated' : 'outlined'"
-          :color="plan.highlight ? 'primary' : undefined"
-        >
-          <h3 class="text-h5 font-weight-bold mb-1">{{ plan.name }}</h3>
-          <p class="text-h4 font-weight-bold mb-1">
-            {{ plan.price }}<span class="text-body-2">{{ plan.period }}</span>
-          </p>
-          <v-list :class="plan.highlight ? 'bg-transparent' : ''" density="compact">
-            <v-list-item v-for="feature in plan.features" :key="feature" :title="feature">
-              <template #prepend>
-                <v-icon icon="mdi-check" size="18" />
-              </template>
-            </v-list-item>
-          </v-list>
-          <v-btn
-            block
-            class="mt-4"
-            :color="plan.highlight ? 'white' : 'primary'"
-            :variant="plan.highlight ? 'flat' : 'elevated'"
-            @click="router.push({ name: 'register' })"
+        <div class="position-relative h-100">
+          <v-chip
+            v-if="plan.highlight"
+            color="secondary"
+            size="small"
+            class="position-absolute font-weight-medium"
+            style="top: -14px; right: 24px; z-index: 1"
           >
-            Começar agora
-          </v-btn>
-        </v-card>
+            Mais popular
+          </v-chip>
+          <v-card
+            class="pa-6 h-100"
+            :variant="plan.highlight ? 'elevated' : 'outlined'"
+            :color="plan.highlight ? 'primary' : undefined"
+            :elevation="plan.highlight ? 8 : 0"
+          >
+            <h3 class="text-h5 font-weight-bold mb-1">{{ plan.name }}</h3>
+            <p class="text-h4 font-weight-bold mb-1">
+              {{ plan.price }}<span class="text-body-2">{{ plan.period }}</span>
+            </p>
+            <v-list :class="plan.highlight ? 'bg-transparent' : ''" density="compact">
+              <v-list-item
+                v-for="feature in plan.features"
+                :key="feature"
+                class="px-0"
+                min-height="0"
+              >
+                <template #prepend>
+                  <v-icon icon="mdi-check" size="18" class="mr-2" />
+                </template>
+                <span class="text-body-2" style="white-space: normal">{{ feature }}</span>
+              </v-list-item>
+            </v-list>
+            <v-btn
+              block
+              class="mt-4"
+              :color="plan.highlight ? 'white' : 'primary'"
+              :variant="plan.highlight ? 'flat' : 'elevated'"
+              @click="router.push({ name: 'register' })"
+            >
+              Começar agora
+            </v-btn>
+          </v-card>
+        </div>
       </v-col>
     </v-row>
   </v-container>
