@@ -6,7 +6,12 @@ Toda a documentação de produto, arquitetura, dados, API, telas, IA, segurança
 
 ## Status
 
-Fundação técnica (M0) criada: scaffold de backend e frontend, sem features de negócio ainda implementadas. Próximo passo do roadmap: M1 — Autenticação e Landing Page (ver [`docs/09-backlog-roadmap-sprints.md`](./docs/09-backlog-roadmap-sprints.md)).
+- **M0 — Fundação técnica**: concluído. Scaffold de backend e frontend.
+- **M1 — Autenticação e Landing Page**: concluído. Registro/login (email+senha), login com Google, refresh/logout, recuperação de senha, verificação de email (todos com testes automatizados no backend) e landing page completa (Hero, Sobre, Benefícios, Recursos, Planos, Depoimentos, FAQ, Contato).
+
+Próximo passo do roadmap: **M2 — Carteira** (catálogo de ativos via brapi.dev/BACEN/Tesouro Transparente + lançamento de transações). Ver [`docs/09-backlog-roadmap-sprints.md`](./docs/09-backlog-roadmap-sprints.md).
+
+**Pendências antes de produção real**: preencher `GOOGLE_CLIENT_ID`/`GOOGLE_CLIENT_SECRET` e `RESEND_API_KEY` no `.env` (sem eles, login Google falha e emails só são logados no console); trocar `JWT_SECRET_KEY` por um valor forte gerado aleatoriamente; os depoimentos da landing page são placeholders — substituir por relatos reais antes do lançamento.
 
 ## Rodando localmente
 
@@ -31,7 +36,7 @@ pip install -e ".[dev]"
 uvicorn app.main:app --reload
 ```
 
-Requer um PostgreSQL local rodando (ajuste `DATABASE_URL` em `backend/.env`).
+Requer um PostgreSQL local rodando (ajuste `DATABASE_URL` em `backend/.env`). Para rodar os testes (usam SQLite em memória, não precisam de Postgres): `pytest` dentro de `backend/` com o venv ativo.
 
 **Frontend**
 
