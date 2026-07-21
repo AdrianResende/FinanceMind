@@ -24,12 +24,22 @@ const faqs = [
 </script>
 
 <template>
-  <v-container id="faq" class="py-12">
-    <h2 class="text-h4 font-weight-bold text-center mb-10">Perguntas frequentes</h2>
-    <v-responsive class="mx-auto" max-width="720">
-      <v-expansion-panels variant="accordion">
-        <v-expansion-panel v-for="faq in faqs" :key="faq.q" :title="faq.q" :text="faq.a" />
-      </v-expansion-panels>
-    </v-responsive>
-  </v-container>
+  <section id="faq" class="page-shell section-py">
+    <h2 class="text-section-title text-center mb-8">Perguntas frequentes</h2>
+
+    <n-card bordered content-style="padding: 8px 24px" class="glass-card faq-card">
+      <n-collapse accordion>
+        <n-collapse-item v-for="faq in faqs" :key="faq.q" :title="faq.q" :name="faq.q">
+          <span class="text-body">{{ faq.a }}</span>
+        </n-collapse-item>
+      </n-collapse>
+    </n-card>
+  </section>
 </template>
+
+<style scoped>
+.faq-card {
+  max-width: 720px;
+  margin-inline: auto;
+}
+</style>

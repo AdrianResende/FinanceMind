@@ -31,48 +31,58 @@ onMounted(() => {
 </script>
 
 <template>
-  <v-container>
-    <div class="d-flex align-center justify-space-between mb-4 flex-wrap ga-2">
-      <h1 class="text-h5 font-weight-bold">Olá, {{ auth.user?.full_name }}</h1>
-      <v-btn-toggle v-model="periodModel" color="primary" density="comfortable" mandatory>
-        <v-btn v-for="option in periodOptions" :key="option.value" :value="option.value">
+  <div>
+    <div class="dashboard-header mb-6">
+      <h1 class="text-section-title">Olá, {{ auth.user?.full_name }}</h1>
+      <n-radio-group v-model:value="periodModel" name="period">
+        <n-radio-button v-for="option in periodOptions" :key="option.value" :value="option.value">
           {{ option.label }}
-        </v-btn>
-      </v-btn-toggle>
+        </n-radio-button>
+      </n-radio-group>
     </div>
 
-    <v-alert v-if="dashboardStore.error" type="error" density="compact" class="mb-4">
+    <n-alert v-if="dashboardStore.error" type="error" class="mb-4">
       {{ dashboardStore.error }}
-    </v-alert>
+    </n-alert>
 
-    <v-row class="mb-2">
-      <v-col cols="12" sm="4">
+    <n-grid :x-gap="24" :y-gap="24" cols="1 m:3" responsive="screen" class="mb-6">
+      <n-grid-item>
         <PatrimonioCard :total="dashboardStore.totalCurrent" :performance="dashboardStore.performance" />
-      </v-col>
-    </v-row>
+      </n-grid-item>
+    </n-grid>
 
-    <v-row>
-      <v-col cols="12" md="7">
+    <n-grid :x-gap="24" :y-gap="24" cols="1 m:12" responsive="screen" class="mb-6">
+      <n-grid-item span="1 m:7">
         <RentabilidadeChart :series="dashboardStore.benchmarks" />
-      </v-col>
-      <v-col cols="12" md="5">
+      </n-grid-item>
+      <n-grid-item span="1 m:5">
         <AlocacaoChart :items="dashboardStore.allocation" />
-      </v-col>
-    </v-row>
+      </n-grid-item>
+    </n-grid>
 
-    <v-row>
-      <v-col cols="12" md="7">
+    <n-grid :x-gap="24" :y-gap="24" cols="1 m:12" responsive="screen" class="mb-6">
+      <n-grid-item span="1 m:7">
         <EvolucaoPatrimonialChart :points="dashboardStore.performance" />
-      </v-col>
-      <v-col cols="12" md="5">
+      </n-grid-item>
+      <n-grid-item span="1 m:5">
         <TopMoversTable :data="dashboardStore.topMovers" />
-      </v-col>
-    </v-row>
+      </n-grid-item>
+    </n-grid>
 
-    <v-row>
-      <v-col cols="12">
+    <n-grid :x-gap="24" :y-gap="24" cols="1">
+      <n-grid-item>
         <DividendosChart :dividends="dashboardStore.dividends" />
-      </v-col>
-    </v-row>
-  </v-container>
+      </n-grid-item>
+    </n-grid>
+  </div>
 </template>
+
+<style scoped>
+.dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+</style>

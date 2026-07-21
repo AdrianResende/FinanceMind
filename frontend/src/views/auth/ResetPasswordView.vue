@@ -1,19 +1,35 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRoute, useRouter, RouterLink } from 'vue-router'
+import type { FormInst, FormRules } from 'naive-ui'
 
 import { authService } from '@/services/authService'
 
 const route = useRoute()
 const router = useRouter()
 
+const formRef = ref<FormInst | null>(null)
 const newPassword = ref('')
 const loading = ref(false)
 const errorMessage = ref('')
 const success = ref(false)
 
+const rules: FormRules = {
+  newPassword: {
+    required: true,
+    min: 8,
+    message: 'Mínimo de 8 caracteres',
+    trigger: ['blur', 'input'],
+  },
+}
+
 async function onSubmit() {
   errorMessage.value = ''
+  try {
+    await formRef.value?.validate()
+  } catch {
+    return
+  }
   loading.value = true
   try {
     const token = route.query.token as string
@@ -29,45 +45,62 @@ async function onSubmit() {
 </script>
 
 <template>
-  <v-container class="fill-height auth-bg d-flex align-center justify-center" fluid>
-    <v-responsive class="mx-auto" max-width="420">
-      <div class="text-center mb-6">
-        <RouterLink to="/" class="text-decoration-none text-h5 font-weight-bold text-primary">
-          FinanceMind
-        </RouterLink>
-      </div>
-      <v-card class="pa-8" variant="outlined" rounded="lg" elevation="2">
-        <h1 class="text-h5 font-weight-bold mb-6 text-center">Redefinir senha</h1>
+  <div class="auth-page">
+    <div class="auth-wrap">
+      <RouterLink to="/" class="auth-brand text-title mb-6">FinanceMind</RouterLink>
 
-        <v-alert v-if="success" type="success" density="compact" class="mb-4">
+      <n-card bordered content-style="padding: 32px" class="glass-card glass-card--strong">
+        <h1 class="text-title text-center mb-6">Redefinir senha</h1>
+
+        <n-alert v-if="success" type="success" class="mb-4">
           Senha redefinida! Redirecionando para o login...
-        </v-alert>
+        </n-alert>
 
-        <v-form v-else @submit.prevent="onSubmit">
-          <v-text-field
-            v-model="newPassword"
-            label="Nova senha"
-            type="password"
-            hint="Mínimo 8 caracteres"
-            required
-            class="mb-4"
-          />
-          <v-alert v-if="errorMessage" type="error" density="compact" class="mb-4">
-            {{ errorMessage }}
-          </v-alert>
-          <v-btn type="submit" color="primary" block size="large" :loading="loading">
+        <n-form
+          v-else
+          ref="formRef"
+          :model="{ newPassword }"
+          :rules="rules"
+          @submit.prevent="onSubmit"
+        >
+          <n-form-item path="newPassword" label="Nova senha" show-require-mark>
+            <n-input
+              v-model:value="newPassword"
+              type="password"
+              placeholder="Mínimo 8 caracteres"
+              size="large"
+              show-password-on="click"
+            />
+          </n-form-item>
+          <n-alert v-if="errorMessage" type="error" class="mb-4">{{ errorMessage }}</n-alert>
+          <n-button type="primary" block size="large" attr-type="submit" :loading="loading">
             Redefinir senha
-          </v-btn>
-        </v-form>
-      </v-card>
-    </v-responsive>
-  </v-container>
+          </n-button>
+        </n-form>
+      </n-card>
+    </div>
+  </div>
 </template>
 
 <style scoped>
-.auth-bg {
-  background:
-    radial-gradient(circle at 50% 0%, rgba(15, 76, 100, 0.08), transparent 60%),
-    #f7f9fa;
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6);
+}
+
+.auth-wrap {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.auth-brand {
+  color: var(--brand-primary);
+  text-decoration: none;
 }
 </style>

@@ -34,55 +34,99 @@ const plans = [
 </script>
 
 <template>
-  <v-container id="planos" class="py-12">
-    <h2 class="text-h4 font-weight-bold text-center mb-10">Planos</h2>
-    <v-row justify="center">
-      <v-col v-for="plan in plans" :key="plan.name" cols="12" sm="8" md="4">
-        <div class="position-relative h-100">
-          <v-chip
-            v-if="plan.highlight"
-            color="secondary"
-            size="small"
-            class="position-absolute font-weight-medium"
-            style="top: -14px; right: 24px; z-index: 1"
-          >
+  <section id="planos" class="page-shell section-py">
+    <h2 class="text-section-title text-center mb-8">Planos</h2>
+
+    <n-grid :x-gap="24" :y-gap="24" cols="1 m:2" responsive="screen" class="pricing-grid">
+      <n-grid-item v-for="plan in plans" :key="plan.name">
+        <div class="pricing-card-wrap">
+          <n-tag v-if="plan.highlight" type="success" round :bordered="false" class="pricing-badge">
             Mais popular
-          </v-chip>
-          <v-card
-            class="pa-6 h-100"
-            :variant="plan.highlight ? 'elevated' : 'outlined'"
-            :color="plan.highlight ? 'primary' : undefined"
-            :elevation="plan.highlight ? 8 : 0"
+          </n-tag>
+          <n-card
+            bordered
+            hoverable
+            content-style="padding: 24px"
+            class="glass-card h-100"
+            :class="{ 'glass-card--tint': plan.highlight }"
           >
-            <h3 class="text-h5 font-weight-bold mb-1">{{ plan.name }}</h3>
-            <p class="text-h4 font-weight-bold mb-1">
-              {{ plan.price }}<span class="text-body-2">{{ plan.period }}</span>
+            <h3 class="text-title mb-1">{{ plan.name }}</h3>
+            <p class="pricing-price mb-4">
+              {{ plan.price }}<span class="text-body pricing-period">{{ plan.period }}</span>
             </p>
-            <v-list :class="plan.highlight ? 'bg-transparent' : ''" density="compact">
-              <v-list-item
-                v-for="feature in plan.features"
-                :key="feature"
-                class="px-0"
-                min-height="0"
-              >
-                <template #prepend>
-                  <v-icon icon="mdi-check" size="18" class="mr-2" />
-                </template>
-                <span class="text-body-2" style="white-space: normal">{{ feature }}</span>
-              </v-list-item>
-            </v-list>
-            <v-btn
+
+            <ul class="pricing-features mb-6">
+              <li v-for="feature in plan.features" :key="feature">
+                <MdiIcon name="check" :size="18" :color="plan.highlight ? '#7fe0c8' : undefined" />
+                <span>{{ feature }}</span>
+              </li>
+            </ul>
+
+            <n-button
               block
-              class="mt-4"
-              :color="plan.highlight ? 'white' : 'primary'"
-              :variant="plan.highlight ? 'flat' : 'elevated'"
+              round
+              size="large"
+              :type="plan.highlight ? undefined : 'primary'"
+              :color="plan.highlight ? '#ffffff' : undefined"
+              :text-color="plan.highlight ? 'var(--brand-primary)' : undefined"
               @click="router.push({ name: 'register' })"
             >
               Começar agora
-            </v-btn>
-          </v-card>
+            </n-button>
+          </n-card>
         </div>
-      </v-col>
-    </v-row>
-  </v-container>
+      </n-grid-item>
+    </n-grid>
+  </section>
 </template>
+
+<style scoped>
+.pricing-grid {
+  max-width: 760px;
+  margin-inline: auto;
+}
+
+.pricing-card-wrap {
+  position: relative;
+  height: 100%;
+}
+
+.pricing-badge {
+  position: absolute;
+  top: -14px;
+  right: 24px;
+  z-index: 1;
+  font-weight: 600;
+}
+
+.pricing-price {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: var(--ink-1);
+}
+
+.glass-card--tint .pricing-price {
+  color: #fff;
+}
+
+.pricing-period {
+  font-size: 0.9rem;
+  margin-inline-start: var(--space-1);
+}
+
+.pricing-features {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.pricing-features li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: 0.9375rem;
+}
+</style>

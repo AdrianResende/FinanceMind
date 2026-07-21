@@ -1,17 +1,17 @@
 <script setup lang="ts">
 const pillars = [
   {
-    icon: 'mdi-school-outline',
+    icon: 'school-outline',
     title: 'Educação',
     text: 'Glossário claro sobre Ações, FIIs, ETFs, Tesouro Direto, CDB, dividendos, juros compostos e indicadores financeiros.',
   },
   {
-    icon: 'mdi-chart-line',
+    icon: 'chart-line',
     title: 'Acompanhamento',
     text: 'Sua carteira consolidada, com rentabilidade, alocação e comparação com CDI, IPCA e IBOV.',
   },
   {
-    icon: 'mdi-robot-outline',
+    icon: 'robot-outline',
     title: 'Inteligência',
     text: 'Chat de IA especializado em investimentos para tirar dúvidas, sempre com avisos claros de que não é recomendação.',
   },
@@ -19,35 +19,31 @@ const pillars = [
 </script>
 
 <template>
-  <v-container id="sobre" class="py-12">
-    <h2 class="text-h4 font-weight-bold text-center mb-2">Sobre o FinanceMind</h2>
-    <p class="text-body-1 text-medium-emphasis text-center mx-auto mb-10" style="max-width: 640px">
+  <section id="sobre" class="page-shell section-py">
+    <h2 class="text-section-title text-center">Sobre o FinanceMind</h2>
+    <p class="text-lead text-center section-intro">
       Não somos uma corretora, nem um app de controle de gastos. Somos uma plataforma para você
       entender o que está comprando e acompanhar sua evolução como investidor.
     </p>
-    <v-row>
-      <v-col v-for="pillar in pillars" :key="pillar.title" cols="12" md="4">
-        <v-card class="pa-6 h-100 pillar-card" variant="outlined" rounded="lg">
-          <v-avatar color="primary" variant="tonal" size="56" class="mb-4">
-            <v-icon :icon="pillar.icon" size="28" />
-          </v-avatar>
-          <h3 class="text-h6 font-weight-bold mb-2">{{ pillar.title }}</h3>
-          <p class="text-body-2 text-medium-emphasis">{{ pillar.text }}</p>
-        </v-card>
-      </v-col>
-    </v-row>
-  </v-container>
+
+    <n-grid :x-gap="24" :y-gap="24" cols="1 s:3" responsive="screen">
+      <n-grid-item v-for="pillar in pillars" :key="pillar.title">
+        <n-card bordered hoverable content-style="padding: 24px" class="glass-card h-100">
+          <div class="icon-tile mb-4">
+            <MdiIcon :name="pillar.icon" :size="24" />
+          </div>
+          <h3 class="text-title mb-2">{{ pillar.title }}</h3>
+          <p class="text-body">{{ pillar.text }}</p>
+        </n-card>
+      </n-grid-item>
+    </n-grid>
+  </section>
 </template>
 
 <style scoped>
-.pillar-card {
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
-}
-
-.pillar-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 24px -12px rgba(15, 76, 100, 0.25);
+.section-intro {
+  max-width: 640px;
+  margin-inline: auto;
+  margin-block: var(--space-3) var(--space-8);
 }
 </style>

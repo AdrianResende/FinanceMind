@@ -1,14 +1,25 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { RouterLink } from 'vue-router'
+import type { FormInst, FormRules } from 'naive-ui'
 
 import { authService } from '@/services/authService'
 
+const formRef = ref<FormInst | null>(null)
 const email = ref('')
 const loading = ref(false)
 const sent = ref(false)
 
+const rules: FormRules = {
+  email: { required: true, message: 'Informe seu email', trigger: 'blur' },
+}
+
 async function onSubmit() {
+  try {
+    await formRef.value?.validate()
+  } catch {
+    return
+  }
   loading.value = true
   try {
     await authService.forgotPassword(email.value)
@@ -20,39 +31,53 @@ async function onSubmit() {
 </script>
 
 <template>
-  <v-container class="fill-height auth-bg d-flex align-center justify-center" fluid>
-    <v-responsive class="mx-auto" max-width="420">
-      <div class="text-center mb-6">
-        <RouterLink to="/" class="text-decoration-none text-h5 font-weight-bold text-primary">
-          FinanceMind
-        </RouterLink>
-      </div>
-      <v-card class="pa-8" variant="outlined" rounded="lg" elevation="2">
-        <h1 class="text-h5 font-weight-bold mb-6 text-center">Recuperar senha</h1>
+  <div class="auth-page">
+    <div class="auth-wrap">
+      <RouterLink to="/" class="auth-brand text-title mb-6">FinanceMind</RouterLink>
 
-        <v-alert v-if="sent" type="success" density="compact" class="mb-4">
+      <n-card bordered content-style="padding: 32px" class="glass-card glass-card--strong">
+        <h1 class="text-title text-center mb-6">Recuperar senha</h1>
+
+        <n-alert v-if="sent" type="success" class="mb-4">
           Se o email existir em nossa base, um link de redefinição foi enviado.
-        </v-alert>
+        </n-alert>
 
-        <v-form v-else @submit.prevent="onSubmit">
-          <v-text-field v-model="email" label="Email" type="email" required class="mb-4" />
-          <v-btn type="submit" color="primary" block size="large" :loading="loading">
+        <n-form v-else ref="formRef" :model="{ email }" :rules="rules" @submit.prevent="onSubmit">
+          <n-form-item path="email" label="Email" show-require-mark>
+            <n-input v-model:value="email" placeholder="voce@email.com" size="large" />
+          </n-form-item>
+          <n-button type="primary" block size="large" attr-type="submit" :loading="loading">
             Enviar link de redefinição
-          </v-btn>
-        </v-form>
+          </n-button>
+        </n-form>
 
         <div class="text-center mt-4">
-          <RouterLink to="/login" class="text-caption">Voltar para o login</RouterLink>
+          <RouterLink to="/login" class="text-body">Voltar para o login</RouterLink>
         </div>
-      </v-card>
-    </v-responsive>
-  </v-container>
+      </n-card>
+    </div>
+  </div>
 </template>
 
 <style scoped>
-.auth-bg {
-  background:
-    radial-gradient(circle at 50% 0%, rgba(15, 76, 100, 0.08), transparent 60%),
-    #f7f9fa;
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6);
+}
+
+.auth-wrap {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.auth-brand {
+  color: var(--brand-primary);
+  text-decoration: none;
 }
 </style>

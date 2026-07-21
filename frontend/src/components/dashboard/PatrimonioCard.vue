@@ -29,14 +29,36 @@ const tone = computed<'success' | 'error' | undefined>(() => {
 </script>
 
 <template>
-  <v-card class="pa-4 d-flex align-center ga-3">
-    <v-avatar color="primary" variant="tonal" icon="mdi-wallet-outline" />
+  <n-card bordered hoverable content-style="padding: 24px" class="glass-card stat-card">
+    <div class="icon-tile">
+      <MdiIcon name="wallet-outline" :size="22" />
+    </div>
     <div>
-      <div class="text-caption text-medium-emphasis">Patrimônio total</div>
-      <div class="text-h6">{{ formatCurrency(total) }}</div>
-      <div v-if="dayChange !== null" class="text-body-2" :class="tone ? `text-${tone}` : ''">
+      <div class="text-muted" style="font-size: 0.8125rem">Patrimônio total</div>
+      <div class="text-title">{{ formatCurrency(total) }}</div>
+      <div
+        v-if="dayChange !== null"
+        class="text-body"
+        :class="tone === 'success' ? 'text-success' : tone === 'error' ? 'text-error' : ''"
+      >
         {{ dayChange >= 0 ? '+' : '' }}{{ dayChange.toFixed(2) }}% no período
       </div>
     </div>
-  </v-card>
+  </n-card>
 </template>
+
+<style scoped>
+.stat-card :deep(.n-card__content) {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.text-success {
+  color: var(--brand-success);
+}
+
+.text-error {
+  color: var(--brand-error);
+}
+</style>

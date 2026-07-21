@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import axios from 'axios'
+import type { FormInst, FormRules, SelectOption } from 'naive-ui'
 
 import AssetAutocomplete from '@/components/market/AssetAutocomplete.vue'
 import { usePortfolioStore } from '@/stores/portfolio'
@@ -15,24 +16,38 @@ const props = defineProps<{
 
 const portfolioStore = usePortfolioStore()
 
+const formRef = ref<FormInst | null>(null)
 const asset = ref<Asset | null>(null)
 const operation = ref<TransactionOperation>('compra')
 const quantity = ref<number | null>(null)
 const unitPrice = ref<number | null>(null)
 const fees = ref<number | null>(0)
-const operationDate = ref('')
+const operationDate = ref<string | null>(null)
 const loading = ref(false)
 const errorMessage = ref('')
 
 const isEditing = computed(() => !!props.editingTransaction)
 
-const operationOptions = [
-  { title: 'Compra', value: 'compra' },
-  { title: 'Venda', value: 'venda' },
+const operationOptions: SelectOption[] = [
+  { label: 'Compra', value: 'compra' },
+  { label: 'Venda', value: 'venda' },
 ]
 
-const positiveRule = (v: number | null) => (v !== null && v > 0) || 'Deve ser maior que zero'
-const requiredRule = (v: unknown) => !!v || 'Campo obrigatório'
+const rules: FormRules = {
+  quantity: {
+    required: true,
+    validator: (_rule, value: number | null) =>
+      value !== null && value > 0 ? true : new Error('Deve ser maior que zero'),
+    trigger: ['blur', 'input'],
+  },
+  unitPrice: {
+    required: true,
+    validator: (_rule, value: number | null) =>
+      value !== null && value > 0 ? true : new Error('Deve ser maior que zero'),
+    trigger: ['blur', 'input'],
+  },
+  operationDate: { required: true, message: 'Informe a data da operação', trigger: 'blur' },
+}
 
 watch(
   () => props.editingTransaction,
@@ -50,7 +65,7 @@ watch(
       quantity.value = null
       unitPrice.value = null
       fees.value = 0
-      operationDate.value = ''
+      operationDate.value = null
     }
     errorMessage.value = ''
   },
@@ -58,7 +73,13 @@ watch(
 )
 
 async function onSubmit() {
-  if (!asset.value || quantity.value === null || unitPrice.value === null) {
+  try {
+    await formRef.value?.validate()
+  } catch {
+    return
+  }
+  if (!asset.value) {
+    errorMessage.value = 'Selecione um ativo.'
     return
   }
 
@@ -71,7 +92,7 @@ async function onSubmit() {
       quantity: String(quantity.value),
       unit_price: String(unitPrice.value),
       fees: String(fees.value ?? 0),
-      operation_date: operationDate.value,
+      operation_date: operationDate.value!,
     }
 
     if (isEditing.value && props.editingTransaction) {
@@ -95,53 +116,64 @@ async function onSubmit() {
 </script>
 
 <template>
-  <v-dialog v-model="open" max-width="480">
-    <v-card class="pa-4">
-      <v-card-title>{{ isEditing ? 'Editar transação' : 'Nova transação' }}</v-card-title>
-      <v-card-text>
-        <v-form @submit.prevent="onSubmit">
-          <AssetAutocomplete v-model="asset" :disabled="isEditing" class="mb-2" />
-          <v-select
-            v-model="operation"
-            :items="operationOptions"
-            label="Operação"
-            required
-            class="mb-2"
+  <n-modal v-model:show="open">
+    <n-card
+      style="width: 480px"
+      :title="isEditing ? 'Editar transação' : 'Nova transação'"
+      :bordered="false"
+      size="huge"
+      role="dialog"
+      aria-modal="true"
+      content-style="padding-top: 20px"
+      class="glass-card glass-card--strong"
+    >
+      <n-form ref="formRef" :model="{ quantity, unitPrice, operationDate }" :rules="rules">
+        <n-form-item label="Ativo">
+          <AssetAutocomplete v-model="asset" :disabled="isEditing" style="width: 100%" />
+        </n-form-item>
+        <n-form-item label="Operação">
+          <n-select v-model:value="operation" :options="operationOptions" size="large" />
+        </n-form-item>
+        <n-form-item path="quantity" label="Quantidade" show-require-mark>
+          <n-input-number v-model:value="quantity" :min="0.000001" style="width: 100%" size="large" />
+        </n-form-item>
+        <n-form-item path="unitPrice" label="Preço unitário" show-require-mark>
+          <n-input-number
+            v-model:value="unitPrice"
+            :min="0.01"
+            :precision="2"
+            style="width: 100%"
+            size="large"
           />
-          <v-text-field
-            v-model.number="quantity"
-            label="Quantidade"
-            type="number"
-            :rules="[requiredRule, positiveRule]"
-            class="mb-2"
-          />
-          <v-text-field
-            v-model.number="unitPrice"
-            label="Preço unitário"
-            type="number"
-            :rules="[requiredRule, positiveRule]"
-            class="mb-2"
-          />
-          <v-text-field v-model.number="fees" label="Taxas" type="number" class="mb-2" />
-          <v-text-field
-            v-model="operationDate"
-            label="Data da operação"
+        </n-form-item>
+        <n-form-item label="Taxas">
+          <n-input-number v-model:value="fees" :min="0" :precision="2" style="width: 100%" size="large" />
+        </n-form-item>
+        <n-form-item path="operationDate" label="Data da operação" show-require-mark>
+          <n-date-picker
+            v-model:formatted-value="operationDate"
+            value-format="yyyy-MM-dd"
             type="date"
-            :rules="[requiredRule]"
-            class="mb-2"
+            style="width: 100%"
+            size="large"
           />
+        </n-form-item>
 
-          <v-alert v-if="errorMessage" type="error" density="compact" class="mb-4">
-            {{ errorMessage }}
-          </v-alert>
+        <n-alert v-if="errorMessage" type="error" class="mb-4">{{ errorMessage }}</n-alert>
 
-          <v-card-actions class="px-0">
-            <v-spacer />
-            <v-btn variant="text" @click="open = false">Cancelar</v-btn>
-            <v-btn type="submit" color="primary" :loading="loading">Salvar</v-btn>
-          </v-card-actions>
-        </v-form>
-      </v-card-text>
-    </v-card>
-  </v-dialog>
+        <div class="dialog-actions">
+          <n-button quaternary @click="open = false">Cancelar</n-button>
+          <n-button type="primary" :loading="loading" @click="onSubmit">Salvar</n-button>
+        </div>
+      </n-form>
+    </n-card>
+  </n-modal>
 </template>
+
+<style scoped>
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}
+</style>

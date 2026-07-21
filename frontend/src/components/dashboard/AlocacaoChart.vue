@@ -29,9 +29,8 @@ const options = computed<ApexOptions>(() => ({
 </script>
 
 <template>
-  <v-card class="pa-4">
-    <v-card-title>Alocação por classe</v-card-title>
+  <n-card title="Alocação por classe" bordered hoverable content-style="padding: 24px" class="glass-card">
     <ApexChart v-if="items.length" type="donut" height="280" :options="options" :series="series" />
-    <p v-else class="text-body-2 text-medium-emphasis pa-4">Nenhuma posição para exibir ainda.</p>
-  </v-card>
+    <p v-else class="text-body">Nenhuma posição para exibir ainda.</p>
+  </n-card>
 </template>

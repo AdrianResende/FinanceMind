@@ -8,7 +8,7 @@ Componentes reutilizáveis: `AppHeader`, `HeroSection`, `BenefitsGrid`, `Feature
 
 ## 5.2 Autenticação (`/login`, `/registro`, `/esqueci-senha`, `/redefinir-senha`)
 
-Formulários com Vuetify (`v-form`, `v-text-field`, validação client-side + erros retornados pela API). Botão "Entrar com Google" chama o fluxo OAuth (redirect).
+Formulários com Naive UI (`n-form`, `n-input`, validação client-side + erros retornados pela API). Botão "Entrar com Google" chama o fluxo OAuth (redirect).
 
 ## 5.3 App autenticado — Shell
 

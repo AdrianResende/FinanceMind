@@ -52,5 +52,5 @@ npm run dev
 financeMind/
 ├── docs/         # Documentação completa do projeto
 ├── backend/      # FastAPI + SQLAlchemy + Alembic
-└── frontend/     # Vue 3 + TypeScript + Vuetify + Pinia
+└── frontend/     # Vue 3 + TypeScript + Naive UI + Pinia
 ```

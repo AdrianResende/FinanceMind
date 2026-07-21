@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter, useRoute, RouterLink } from 'vue-router'
+import type { FormInst, FormRules } from 'naive-ui'
 
 import { useAuthStore } from '@/stores/auth'
 import { authService } from '@/services/authService'
@@ -9,13 +10,24 @@ const router = useRouter()
 const route = useRoute()
 const auth = useAuthStore()
 
+const formRef = ref<FormInst | null>(null)
 const email = ref('')
 const password = ref('')
 const loading = ref(false)
 const errorMessage = ref('')
 
+const rules: FormRules = {
+  email: { required: true, message: 'Informe seu email', trigger: 'blur' },
+  password: { required: true, message: 'Informe sua senha', trigger: 'blur' },
+}
+
 async function onSubmit() {
   errorMessage.value = ''
+  try {
+    await formRef.value?.validate()
+  } catch {
+    return
+  }
   loading.value = true
   try {
     await auth.login(email.value, password.value)
@@ -41,78 +53,83 @@ function enterDemoMode() {
 </script>
 
 <template>
-  <v-container class="fill-height auth-bg d-flex align-center justify-center" fluid>
-    <v-responsive class="mx-auto" max-width="420">
-      <div class="text-center mb-6">
-        <RouterLink to="/" class="text-decoration-none text-h5 font-weight-bold text-primary">
-          FinanceMind
-        </RouterLink>
-      </div>
-      <v-card class="pa-8" variant="outlined" rounded="lg" elevation="2">
-        <h1 class="text-h5 font-weight-bold mb-6 text-center">Entrar no FinanceMind</h1>
+  <div class="auth-page">
+    <div class="auth-wrap">
+      <RouterLink to="/" class="auth-brand text-title mb-6">FinanceMind</RouterLink>
 
-        <v-btn block variant="outlined" prepend-icon="mdi-google" class="mb-4" @click="loginWithGoogle">
+      <n-card bordered content-style="padding: 32px" class="glass-card glass-card--strong">
+        <h1 class="text-title text-center mb-6">Entrar no FinanceMind</h1>
+
+        <n-button block secondary size="large" class="mb-4" @click="loginWithGoogle">
+          <template #icon><MdiIcon name="google" :size="18" /></template>
           Entrar com Google
-        </v-btn>
+        </n-button>
 
-        <v-divider class="mb-4">
-          <span class="text-caption text-medium-emphasis px-2">ou</span>
-        </v-divider>
+        <n-divider class="mb-4">ou</n-divider>
 
-        <v-form @submit.prevent="onSubmit">
-          <v-text-field
-            v-model="email"
-            label="Email"
-            type="email"
-            required
-            class="mb-2"
-          />
-          <v-text-field
-            v-model="password"
-            label="Senha"
-            type="password"
-            required
-            class="mb-2"
-          />
-          <v-alert v-if="errorMessage" type="error" density="compact" class="mb-4">
-            {{ errorMessage }}
-          </v-alert>
-          <v-btn type="submit" color="primary" block size="large" :loading="loading">
+        <n-form ref="formRef" :model="{ email, password }" :rules="rules" @submit.prevent="onSubmit">
+          <n-form-item path="email" label="Email" show-require-mark>
+            <n-input v-model:value="email" type="text" placeholder="voce@email.com" size="large" />
+          </n-form-item>
+          <n-form-item path="password" label="Senha" show-require-mark>
+            <n-input
+              v-model:value="password"
+              type="password"
+              placeholder="••••••••"
+              size="large"
+              show-password-on="click"
+            />
+          </n-form-item>
+          <n-alert v-if="errorMessage" type="error" class="mb-4">{{ errorMessage }}</n-alert>
+          <n-button type="primary" block size="large" attr-type="submit" :loading="loading">
             Entrar
-          </v-btn>
-        </v-form>
+          </n-button>
+        </n-form>
 
-        <div class="d-flex justify-space-between mt-4">
-          <RouterLink to="/esqueci-senha" class="text-caption">Esqueci minha senha</RouterLink>
-          <RouterLink to="/registro" class="text-caption">Criar conta</RouterLink>
+        <div class="auth-links mt-4">
+          <RouterLink to="/esqueci-senha" class="text-body">Esqueci minha senha</RouterLink>
+          <RouterLink to="/registro" class="text-body">Criar conta</RouterLink>
         </div>
 
         <template v-if="showDemoLogin">
-          <v-divider class="my-4">
-            <span class="text-caption text-medium-emphasis px-2">dev</span>
-          </v-divider>
-          <v-btn
-            block
-            variant="tonal"
-            color="warning"
-            prepend-icon="mdi-flask-outline"
-            @click="enterDemoMode"
-          >
+          <n-divider class="my-4">dev</n-divider>
+          <n-button block secondary type="warning" @click="enterDemoMode">
+            <template #icon><MdiIcon name="flask-outline" :size="18" /></template>
             Entrar em modo demonstração
-          </v-btn>
-          <p class="text-caption text-medium-emphasis text-center mt-2">
+          </n-button>
+          <p class="text-muted text-center mt-2" style="font-size: 0.8rem">
             Sem backend/banco — navega com dados fictícios. Só aparece em build de desenvolvimento.
           </p>
         </template>
-      </v-card>
-    </v-responsive>
-  </v-container>
+      </n-card>
+    </div>
+  </div>
 </template>
 
 <style scoped>
-.auth-bg {
-  background:
-    radial-gradient(circle at 50% 0%, rgba(15, 76, 100, 0.08), transparent 60%),
-    #f7f9fa;
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6);
+}
+
+.auth-wrap {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.auth-brand {
+  color: var(--brand-primary);
+  text-decoration: none;
+}
+
+.auth-links {
+  display: flex;
+  justify-content: space-between;
 }
 </style>

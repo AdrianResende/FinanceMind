@@ -44,25 +44,52 @@ async function onDelete(id: string) {
 </script>
 
 <template>
-  <v-card class="pa-4">
-    <div class="d-flex align-center justify-space-between mb-2">
-      <v-card-title class="pa-0">Dividendos recebidos</v-card-title>
-      <v-btn size="small" color="primary" prepend-icon="mdi-plus" @click="dialogOpen = true">
+  <n-card bordered hoverable content-style="padding: 24px" class="glass-card">
+    <template #header>Dividendos recebidos</template>
+    <template #header-extra>
+      <n-button size="small" type="primary" round @click="dialogOpen = true">
+        <template #icon><MdiIcon name="plus" :size="16" /></template>
         Lançar provento
-      </v-btn>
-    </div>
+      </n-button>
+    </template>
 
     <ApexChart v-if="monthlyTotals.length" type="bar" height="240" :options="options" :series="series" />
-    <p v-else class="text-body-2 text-medium-emphasis pa-4">Nenhum provento lançado ainda.</p>
+    <p v-else class="text-body">Nenhum provento lançado ainda.</p>
 
-    <v-list v-if="dividends.length" density="compact" class="mt-2">
-      <v-list-item v-for="dividend in dividends" :key="dividend.id" :title="`${dividend.asset.ticker} · ${formatCurrency(Number(dividend.amount))}`" :subtitle="dividend.payment_date">
-        <template #append>
-          <v-btn icon="mdi-delete" variant="text" size="small" @click="onDelete(dividend.id)" />
-        </template>
-      </v-list-item>
-    </v-list>
+    <div v-if="dividends.length" class="dividend-list mt-4">
+      <div v-for="dividend in dividends" :key="dividend.id" class="dividend-row">
+        <div>
+          <div class="text-body" style="font-weight: 500">
+            {{ dividend.asset.ticker }} · {{ formatCurrency(Number(dividend.amount)) }}
+          </div>
+          <div class="text-muted" style="font-size: 0.8125rem">{{ dividend.payment_date }}</div>
+        </div>
+        <n-button quaternary circle size="small" @click="onDelete(dividend.id)">
+          <template #icon><MdiIcon name="delete-outline" :size="16" /></template>
+        </n-button>
+      </div>
+    </div>
 
     <DividendFormDialog v-model:open="dialogOpen" />
-  </v-card>
+  </n-card>
 </template>
+
+<style scoped>
+.dividend-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.dividend-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-block: var(--space-2);
+  border-bottom: 1px solid rgba(15, 76, 100, 0.08);
+}
+
+.dividend-row:last-child {
+  border-bottom: none;
+}
+</style>
