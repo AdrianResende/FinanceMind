@@ -50,10 +50,28 @@ async def get_conversation(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
+    from app.schemas.ai_chat import DISCLAIMER
+
     try:
-        return await ai_chat_service.get_conversation(db, current_user.id, conversation_id)
+        conversation = await ai_chat_service.get_conversation(db, current_user.id, conversation_id)
     except ai_chat_service.ConversationNotFoundError:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Conversa não encontrada")
+
+    return ConversationDetailRead(
+        id=conversation.id,
+        title=conversation.title,
+        created_at=conversation.created_at,
+        messages=[
+            MessageRead(
+                id=msg.id,
+                role=msg.role,
+                content=msg.content,
+                created_at=msg.created_at,
+                disclaimer=DISCLAIMER if msg.role == "assistant" else None,
+            )
+            for msg in conversation.messages
+        ],
+    )
 
 
 @router.delete("/conversations/{conversation_id}", status_code=status.HTTP_204_NO_CONTENT)
