@@ -24,6 +24,10 @@ class Settings(BaseSettings):
     backend_url: str = "http://localhost:8000"
 
     groq_api_key: str = ""
+    groq_model: str = "llama-3.3-70b-versatile"
+    groq_base_url: str = "https://api.groq.com/openai/v1"
+    ai_free_monthly_limit: int = 10
+    ai_premium_monthly_limit: int = 1000
     google_client_id: str = ""
     google_client_secret: str = ""
     stripe_secret_key: str = ""

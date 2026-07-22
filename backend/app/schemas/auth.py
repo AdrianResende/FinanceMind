@@ -1,4 +1,5 @@
 import uuid
+from datetime import datetime
 from typing import TYPE_CHECKING
 
 from pydantic import BaseModel, EmailStr, Field
@@ -24,6 +25,8 @@ class UserRead(BaseModel):
     full_name: str
     plan: str
     email_verified: bool
+    auth_provider: str
+    created_at: datetime
 
     model_config = {"from_attributes": True}
 
@@ -35,6 +38,8 @@ class UserRead(BaseModel):
             full_name=user.full_name,
             plan=user.subscription.plan if user.subscription else "free",
             email_verified=user.email_verified_at is not None,
+            auth_provider=user.auth_provider,
+            created_at=user.created_at,
         )
 
 

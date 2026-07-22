@@ -1,3 +1,4 @@
+import type { AIConversationDetail } from '@/types/aiChat'
 import type { Asset, MarketBenchmarkPoint, PriceHistoryPoint } from '@/types/asset'
 import type { AllocationItem, BenchmarkSeries, PerformancePoint, TopMoversResponse } from '@/types/dashboard'
 import type { Dividend } from '@/types/dividend'
@@ -503,3 +504,76 @@ export const demoGlossaryTerms: GlossaryTermDetail[] = [
     example: null,
   },
 ]
+
+export const DEMO_AI_DISCLAIMER =
+  'Este conteúdo é educativo e não constitui recomendação de investimento. Consulte um profissional certificado antes de tomar decisões financeiras.'
+
+export const demoAiConversations: AIConversationDetail[] = [
+  {
+    id: 'demo-conversation-1',
+    title: 'O que é FII?',
+    created_at: '2026-07-20T14:00:00Z',
+    messages: [
+      {
+        id: 'demo-msg-1',
+        role: 'user',
+        content: 'O que é FII?',
+        created_at: '2026-07-20T14:00:00Z',
+        disclaimer: null,
+      },
+      {
+        id: 'demo-msg-2',
+        role: 'assistant',
+        content:
+          'FII (Fundo de Investimento Imobiliário) é um fundo que reúne recursos de vários investidores para ' +
+          'aplicar em empreendimentos imobiliários — como shoppings, galpões logísticos e lajes corporativas — ' +
+          'ou em títulos ligados a esse setor. As cotas são negociadas na bolsa, e o fundo costuma distribuir ' +
+          'mensalmente parte dos rendimentos aos cotistas.',
+        created_at: '2026-07-20T14:00:05Z',
+        disclaimer: DEMO_AI_DISCLAIMER,
+      },
+    ],
+  },
+]
+
+const DEMO_AI_REPLIES: { keywords: string[]; reply: string }[] = [
+  {
+    keywords: ['fii', 'fundo imobiliário'],
+    reply:
+      'FII (Fundo de Investimento Imobiliário) reúne recursos de vários investidores para aplicar em imóveis ' +
+      'ou títulos do setor imobiliário. As cotas são negociadas na bolsa e costumam distribuir rendimentos ' +
+      'mensalmente aos cotistas.',
+  },
+  {
+    keywords: ['tesouro', 'selic', 'ipca+'],
+    reply:
+      'O Tesouro Direto é um programa do governo federal para venda de títulos públicos a pessoas físicas. ' +
+      'O Tesouro Selic acompanha a taxa Selic e tem baixa volatilidade, sendo indicado para reserva de ' +
+      'emergência; já títulos como o Tesouro IPCA+ protegem o poder de compra contra a inflação.',
+  },
+  {
+    keywords: ['ação', 'ações', 'bolsa'],
+    reply:
+      'Ações são pequenas frações do capital social de uma empresa. Ao comprar uma ação, você passa a ser ' +
+      'sócio(a) daquela empresa e pode ganhar tanto com a valorização do preço quanto com a distribuição de ' +
+      'dividendos, dependendo dos resultados e da política de cada companhia.',
+  },
+  {
+    keywords: ['cdi', 'cdb', 'renda fixa'],
+    reply:
+      'O CDI é a principal taxa de referência da renda fixa brasileira, muito próxima da Selic. Produtos como ' +
+      'CDBs costumam ser descritos como um percentual do CDI (ex: 110% do CDI) para indicar sua rentabilidade ' +
+      'esperada em relação a essa referência.',
+  },
+]
+
+const DEMO_AI_FALLBACK_REPLY =
+  'Essa é uma ótima pergunta sobre investimentos! No modo de demonstração, o assistente de IA responde apenas ' +
+  'com exemplos pré-definidos. Experimente perguntar sobre "FII", "Tesouro Direto", "ações" ou "CDI" para ver ' +
+  'uma resposta de exemplo.'
+
+export function buildDemoAiReply(question: string): string {
+  const normalized = question.toLowerCase()
+  const match = DEMO_AI_REPLIES.find((entry) => entry.keywords.some((kw) => normalized.includes(kw)))
+  return match?.reply ?? DEMO_AI_FALLBACK_REPLY
+}

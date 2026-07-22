@@ -17,6 +17,15 @@ export const authService = {
   me() {
     return api.get<User>('/users/me').then((r) => r.data)
   },
+  updateProfile(payload: { full_name: string }) {
+    return api.patch<User>('/users/me', payload).then((r) => r.data)
+  },
+  changePassword(payload: { current_password: string; new_password: string }) {
+    return api.post('/users/me/password', payload)
+  },
+  deleteAccount() {
+    return api.delete('/users/me')
+  },
   forgotPassword(email: string) {
     return api.post('/auth/forgot-password', { email })
   },

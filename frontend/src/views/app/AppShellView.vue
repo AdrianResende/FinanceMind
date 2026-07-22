@@ -16,9 +16,9 @@ const rawMenuItems = [
   { title: 'Mercado', icon: 'chart-areaspline', to: { name: 'market-home' } },
   { title: 'Aprendizado', icon: 'book-education-outline', to: { name: 'glossary-home' } },
   { title: 'Simulações', icon: 'calculator-variant-outline', to: { name: 'simulations-home' } },
-  { title: 'IA', icon: 'robot-outline', to: null },
-  { title: 'Perfil', icon: 'account-outline', to: null },
-  { title: 'Configurações', icon: 'cog-outline', to: null },
+  { title: 'IA', icon: 'robot-outline', to: { name: 'ai-chat-home' } },
+  { title: 'Perfil', icon: 'account-outline', to: { name: 'profile-home' } },
+  { title: 'Configurações', icon: 'cog-outline', to: { name: 'settings-home' } },
 ] as const
 
 function renderIcon(icon: string) {
