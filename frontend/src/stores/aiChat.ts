@@ -140,8 +140,9 @@ export const useAiChatStore = defineStore('aiChat', () => {
         return
       }
 
+      const pendingId = `pending-${Date.now()}`
       activeConversation.value.messages.push({
-        id: `pending-${Date.now()}`,
+        id: pendingId,
         role: 'user',
         content,
         created_at: new Date().toISOString(),
@@ -149,9 +150,14 @@ export const useAiChatStore = defineStore('aiChat', () => {
       })
       const reply = await aiChatService.sendMessage(activeConversation.value.id, content)
       activeConversation.value.messages.push(reply)
-      await loadUsage()
+      try {
+        await loadUsage()
+      } catch {
+        // uso é informativo; não falhar o envio por isso
+      }
     } catch (err) {
-      activeConversation.value.messages.pop()
+      const idx = activeConversation.value.messages.findIndex((m) => m.id === pendingId)
+      if (idx !== -1) activeConversation.value.messages.splice(idx, 1)
       error.value =
         axios.isAxiosError(err) && err.response?.status === 429
           ? 'Você atingiu o limite de mensagens de IA do seu plano neste mês.'
