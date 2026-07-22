@@ -62,13 +62,14 @@ async function confirmDeleteAccount() {
   deleting.value = true
   try {
     await auth.deleteAccount()
-    router.push({ name: 'landing' })
+    await router.push({ name: 'landing' })
   } catch (err) {
-    deleting.value = false
     deleteError.value =
       err instanceof Error && err.message.includes('modo demonstração')
         ? 'Exclusão de conta não está disponível no modo demonstração.'
         : 'Não foi possível excluir sua conta. Tente novamente.'
+  } finally {
+    deleting.value = false
   }
 }
 </script>
