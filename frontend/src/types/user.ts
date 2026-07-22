@@ -4,6 +4,8 @@ export interface User {
   full_name: string
   plan: 'free' | 'premium'
   email_verified: boolean
+  auth_provider: 'local' | 'google'
+  created_at: string
 }
 
 export interface AccessTokenResponse {

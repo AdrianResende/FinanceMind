@@ -1,3 +1,4 @@
+from app.models.ai_chat import AIConversation, AIMessage
 from app.models.asset import Asset
 from app.models.asset_price_history import AssetPriceHistory
 from app.models.benchmark_history import BenchmarkHistory
@@ -21,4 +22,6 @@ __all__ = [
     "DividendReceipt",
     "GlossaryCategory",
     "GlossaryTerm",
+    "AIConversation",
+    "AIMessage",
 ]

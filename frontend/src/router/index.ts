@@ -75,6 +75,21 @@ const router = createRouter({
           name: 'simulations-home',
           component: () => import('../views/app/SimulationsView.vue'),
         },
+        {
+          path: 'ia',
+          name: 'ai-chat-home',
+          component: () => import('../views/app/AiChatView.vue'),
+        },
+        {
+          path: 'perfil',
+          name: 'profile-home',
+          component: () => import('../views/app/ProfileView.vue'),
+        },
+        {
+          path: 'configuracoes',
+          name: 'settings-home',
+          component: () => import('../views/app/SettingsView.vue'),
+        },
       ],
     },
   ],

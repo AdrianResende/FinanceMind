@@ -67,11 +67,35 @@ export const useAuthStore = defineStore('auth', () => {
       full_name: 'Usuário Demonstração',
       plan: 'premium',
       email_verified: true,
+      auth_provider: 'local',
+      created_at: new Date().toISOString(),
     })
   }
 
   async function loadCurrentUser() {
     user.value = await authService.me()
+  }
+
+  async function updateProfile(fullName: string) {
+    if (isDemoMode.value) {
+      throw new Error('Ação indisponível em modo demonstração.')
+    }
+    user.value = await authService.updateProfile({ full_name: fullName })
+  }
+
+  async function changePassword(currentPassword: string, newPassword: string) {
+    if (isDemoMode.value) {
+      throw new Error('Ação indisponível em modo demonstração.')
+    }
+    await authService.changePassword({ current_password: currentPassword, new_password: newPassword })
+  }
+
+  async function deleteAccount() {
+    if (isDemoMode.value) {
+      throw new Error('Ação indisponível em modo demonstração.')
+    }
+    await authService.deleteAccount()
+    clear()
   }
 
   configureApiAuth(
@@ -91,5 +115,8 @@ export const useAuthStore = defineStore('auth', () => {
     setAccessTokenFromOAuth,
     loadCurrentUser,
     enterDemoMode,
+    updateProfile,
+    changePassword,
+    deleteAccount,
   }
 })
